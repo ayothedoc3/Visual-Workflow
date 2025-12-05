@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+:root {
+  /* Interface Colors */
+  --background: #F9FAFB;
+  --canvas: #FFFFFF;
+  --border: #E5E7EB;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+
+  /* Node Type Colors */
+  --issue: #EF4444;
+  --action: #3B82F6;
+  --resource: #10B981;
+  --deliverable: #8B5CF6;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-canvas: var(--canvas);
+  --color-border: var(--border);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-issue: var(--issue);
+  --color-action: var(--action);
+  --color-resource: var(--resource);
+  --color-deliverable: var(--deliverable);
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+
+/* React Flow styles */
+.react-flow__node {
+  font-family: 'Inter', sans-serif;
+}
+
+.react-flow__handle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #94A3B8;
+}
+
+.react-flow__edge-path {
+  stroke: #94A3B8;
+  stroke-width: 2;
+}
