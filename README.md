@@ -1,36 +1,240 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Visual Workflow Builder
 
-## Getting Started
+A powerful visual workflow builder that allows you to rapidly assemble business process workflows by selecting pre-built templates from dropdown libraries. Perfect for creating SOPs, playbooks, and process documentation.
 
-First, run the development server:
+## 🎯 Project Status
+
+### ✅ Phase 1: Foundation - COMPLETE
+All Phase 1 acceptance criteria have been met:
+- ✅ Can drag Issue/Action/Resource/Deliverable nodes to canvas
+- ✅ Can connect nodes with arrows
+- ✅ Canvas supports zoom/pan
+- ✅ Nodes have distinct visual styling
+
+### 🔄 Phase 2: Template System - NEXT
+Coming soon: Template library, CRUD operations, and template selection in nodes.
+
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies (already done)
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Open in browser
+# Navigate to http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📖 Documentation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **[QUICK_START.md](./QUICK_START.md)** - Get up and running in 3 steps
+- **[PHASE_1_SUMMARY.md](./PHASE_1_SUMMARY.md)** - Detailed Phase 1 completion report
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🏗️ Tech Stack
 
-## Learn More
+- **Frontend**: Next.js 14+, React 19, TypeScript
+- **Canvas**: React Flow 11+
+- **Styling**: Tailwind CSS 4, shadcn/ui
+- **State**: Zustand
+- **Database**: PostgreSQL + Drizzle ORM
+- **Icons**: Lucide React
+- **Export**: html-to-image, jsPDF
 
-To learn more about Next.js, take a look at the following resources:
+## 🎨 Features
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Current (Phase 1)
+- Visual workflow canvas with React Flow
+- Four node types: Issue, Action, Resource, Deliverable
+- Drag-and-drop from sidebar
+- Node connections with smooth edges
+- Zoom and pan controls
+- Professional UI with distinct color coding
+- Responsive design
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Coming Soon (Phase 2+)
+- Template library system
+- Template CRUD operations
+- Template selection in nodes
+- Workflow save/load
+- Auto-save
+- Export to PNG/PDF
+- Search and filter
 
-## Deploy on Vercel
+## 🎨 Node Types
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Type | Color | Icon | Purpose | Examples |
+|------|-------|------|---------|----------|
+| Issue | 🔴 Red | Alert Circle | Problems, triggers | Client Onboarding, System Downtime |
+| Action | 🔵 Blue | Play | Steps, processes | Discovery Call, Deploy Hotfix |
+| Resource | 🟢 Green | Wrench | Tools, platforms | GoHighLevel, n8n, Analytics |
+| Deliverable | 🟣 Purple | Check Circle | Outputs, results | Reports, Dashboards |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📁 Project Structure
+
+```
+/app
+  /page.tsx                     # Landing page
+  /workflows/page.tsx           # Workflow list
+  /workflows/[id]/page.tsx      # Workflow editor
+  /templates/page.tsx           # Template management
+
+/components
+  /workflow-editor
+    /WorkflowCanvas.tsx         # Main React Flow canvas
+    /NodeSelector.tsx           # Draggable node sidebar
+    /NodeTypes/                 # Custom node components
+  /ui/                          # shadcn/ui components
+
+/lib
+  /db.ts                        # Database connection
+  /schema.ts                    # Drizzle schema
+  /utils.ts                     # Utilities
+```
+
+## 🔧 Environment Setup
+
+Create a `.env.local` file:
+
+```env
+DATABASE_URL=postgresql://user:password@host:port/database
+```
+
+Get a free PostgreSQL database from:
+- [Neon](https://neon.tech) (Recommended)
+- [Supabase](https://supabase.com)
+
+## 📊 Database Schema
+
+### Templates Table
+- `id`: UUID (primary key)
+- `node_type`: Enum (issue, action, resource, deliverable)
+- `name`: String
+- `description`: Text
+- `category`: String
+- `tags`: String[]
+- `metadata`: JSONB
+- `created_at`, `updated_at`: Timestamps
+
+### Workflows Table
+- `id`: UUID (primary key)
+- `name`: String
+- `description`: Text
+- `thumbnail`: String (URL)
+- `nodes`: JSONB (React Flow nodes)
+- `edges`: JSONB (React Flow edges)
+- `created_at`, `updated_at`: Timestamps
+
+### Users Table
+- `id`: UUID (primary key)
+- `email`: String (unique)
+- `name`: String
+- `created_at`: Timestamp
+
+## 🛠️ Available Scripts
+
+```bash
+npm run dev         # Start development server
+npm run build       # Build for production
+npm run start       # Start production server
+npm run lint        # Run ESLint
+
+# Database (when configured)
+npm run db:generate # Generate migrations
+npm run db:push     # Push schema to database
+npm run db:studio   # Open Drizzle Studio
+```
+
+## 🎯 Design Principles
+
+1. **Speed**: Fast load times, instant interactions
+2. **Simplicity**: Anyone can use without training
+3. **Visual**: Everything is visual, minimal text
+4. **Professional**: Exports look polished, ready to share
+5. **Scalable**: Can handle 1000s of templates
+
+## 🌈 Color System
+
+```css
+/* Node Types */
+--issue: #EF4444 (red)
+--action: #3B82F6 (blue)
+--resource: #10B981 (green)
+--deliverable: #8B5CF6 (purple)
+
+/* Interface */
+--background: #F9FAFB
+--canvas: #FFFFFF
+--border: #E5E7EB
+--text-primary: #111827
+--text-secondary: #6B7280
+```
+
+## 🧪 Testing
+
+### Phase 1 Checklist
+- [x] Project builds without errors
+- [x] Development server starts
+- [x] Landing page loads
+- [x] Workflow editor accessible
+- [x] Nodes draggable from sidebar
+- [x] Nodes connectable
+- [x] Canvas zoom/pan works
+- [x] Styling matches design system
+
+## 🚀 Deployment
+
+Ready for deployment to Vercel:
+
+```bash
+# Deploy to Vercel
+vercel
+
+# Or connect GitHub repo to Vercel dashboard
+# Set environment variables in Vercel dashboard
+```
+
+## 📚 Learning Resources
+
+- [React Flow Docs](https://reactflow.dev)
+- [Next.js App Router](https://nextjs.org/docs/app)
+- [Drizzle ORM](https://orm.drizzle.team)
+- [shadcn/ui](https://ui.shadcn.com)
+- [Tailwind CSS](https://tailwindcss.com)
+
+## 🤝 Contributing
+
+This is a custom internal tool. Phase-by-phase implementation:
+
+1. ✅ **Phase 1**: Foundation (COMPLETE)
+2. 🔄 **Phase 2**: Template System (NEXT)
+3. 📅 **Phase 3**: Workflow Management (UPCOMING)
+4. 📅 **Phase 4**: Polish & Export (FUTURE)
+
+## 📝 License
+
+Private project - Internal use only
+
+## 🙏 Acknowledgments
+
+Built with modern web technologies:
+- Next.js team for the amazing framework
+- React Flow team for the powerful canvas library
+- shadcn for the beautiful UI components
+- Drizzle team for type-safe database access
+
+---
+
+## 📞 Support
+
+For questions or issues:
+1. Check [QUICK_START.md](./QUICK_START.md) for basic help
+2. Review [PHASE_1_SUMMARY.md](./PHASE_1_SUMMARY.md) for technical details
+3. Contact the development team
+
+---
+
+**Built with ❤️ for rapid workflow assembly**
+
+Last Updated: December 5, 2025 - Phase 1 Complete
