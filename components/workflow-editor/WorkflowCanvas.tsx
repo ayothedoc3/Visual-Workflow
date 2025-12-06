@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useEffect } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -31,9 +31,13 @@ const nodeTypes = {
 };
 
 const defaultEdgeOptions = {
-  animated: false,
+  animated: true,
   type: 'smoothstep',
-  style: { stroke: '#94A3B8', strokeWidth: 2 },
+  style: { stroke: '#94A3B8', strokeWidth: 3 },
+  markerEnd: {
+    type: 'arrowclosed' as const,
+    color: '#94A3B8',
+  },
 };
 
 interface WorkflowCanvasProps {
@@ -51,6 +55,20 @@ export function WorkflowCanvas({
 }: WorkflowCanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  // Notify parent when nodes change
+  useEffect(() => {
+    if (onNodesChangeExternal) {
+      onNodesChangeExternal(nodes);
+    }
+  }, [nodes, onNodesChangeExternal]);
+
+  // Notify parent when edges change
+  useEffect(() => {
+    if (onEdgesChangeExternal) {
+      onEdgesChangeExternal(edges);
+    }
+  }, [edges, onEdgesChangeExternal]);
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
@@ -89,47 +107,29 @@ export function WorkflowCanvas({
     [setNodes]
   );
 
-  // Notify parent of changes
-  const handleNodesChange: OnNodesChange = useCallback(
-    (changes) => {
-      onNodesChange(changes);
-      if (onNodesChangeExternal) {
-        // Get updated nodes after changes are applied
-        setNodes((nds) => {
-          onNodesChangeExternal(nds);
-          return nds;
-        });
-      }
-    },
-    [onNodesChange, onNodesChangeExternal, setNodes]
-  );
-
-  const handleEdgesChange: OnEdgesChange = useCallback(
-    (changes) => {
-      onEdgesChange(changes);
-      if (onEdgesChangeExternal) {
-        setEdges((eds) => {
-          onEdgesChangeExternal(eds);
-          return eds;
-        });
-      }
-    },
-    [onEdgesChange, onEdgesChangeExternal, setEdges]
-  );
 
   return (
     <div className="w-full h-full bg-white">
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={handleNodesChange}
-        onEdgesChange={handleEdgesChange}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onDragOver={onDragOver}
         onDrop={onDrop}
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         fitView
+        snapToGrid={true}
+        snapGrid={[15, 15]}
+        connectionLineStyle={{ stroke: '#94A3B8', strokeWidth: 3 }}
+        connectionLineType="smoothstep"
+        deleteKeyCode="Delete"
+        selectNodesOnDrag={true}
+        panOnDrag={[1, 2]}
+        zoomOnScroll={true}
+        zoomOnPinch={true}
         className="bg-gray-50"
       >
         <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#E5E7EB" />

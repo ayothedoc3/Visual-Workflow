@@ -1,11 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { templates } from '@/lib/schema';
 import { eq, like, and, or, ilike } from 'drizzle-orm';
+
+// Check if database is available
+async function isDatabaseAvailable() {
+  try {
+    if (!process.env.DATABASE_URL || process.env.DATABASE_URL === 'postgresql://user:password@host:port/database') {
+      return false;
+    }
+    const { db } = await import('@/lib/db');
+    await db.execute('SELECT 1' as any);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // GET /api/templates - List/search templates
 export async function GET(request: NextRequest) {
   try {
+    const dbAvailable = await isDatabaseAvailable();
+    if (!dbAvailable) {
+      return NextResponse.json(
+        { useClientStorage: true },
+        { status: 200, headers: { 'X-Storage-Mode': 'client' } }
+      );
+    }
+
+    const { db } = await import('@/lib/db');
+    const { templates } = await import('@/lib/schema');
     const { searchParams } = new URL(request.url);
     const nodeType = searchParams.get('node_type');
     const search = searchParams.get('search');
@@ -60,6 +82,18 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const dbAvailable = await isDatabaseAvailable();
+
+    if (!dbAvailable) {
+      return NextResponse.json(
+        { useClientStorage: true, data: body },
+        { status: 201, headers: { 'X-Storage-Mode': 'client' } }
+      );
+    }
+
+    const { db } = await import('@/lib/db');
+    const { templates } = await import('@/lib/schema');
 
     const newTemplate = await db.insert(templates).values({
       nodeType: body.node_type,

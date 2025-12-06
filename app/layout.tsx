@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { Navbar } from "@/components/ui/navbar";
 
 export const metadata: Metadata = {
   title: "Visual Workflow Builder",
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <Navbar />
         {children}
       </body>
     </html>

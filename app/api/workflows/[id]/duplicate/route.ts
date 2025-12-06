@@ -1,7 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { workflows } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+
+// Check if database is available
+async function isDatabaseAvailable() {
+  try {
+    if (!process.env.DATABASE_URL || process.env.DATABASE_URL === 'postgresql://user:password@host:port/database') {
+      return false;
+    }
+    const { db } = await import('@/lib/db');
+    await db.execute('SELECT 1' as any);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // POST /api/workflows/[id]/duplicate - Duplicate a workflow
 export async function POST(
@@ -10,6 +21,18 @@ export async function POST(
 ) {
   try {
     const params = await context.params;
+    const dbAvailable = await isDatabaseAvailable();
+
+    if (!dbAvailable) {
+      return NextResponse.json(
+        { useClientStorage: true, id: params.id },
+        { status: 200, headers: { 'X-Storage-Mode': 'client' } }
+      );
+    }
+
+    const { db } = await import('@/lib/db');
+    const { workflows } = await import('@/lib/schema');
+    const { eq } = await import('drizzle-orm');
 
     // Get the original workflow
     const original = await db

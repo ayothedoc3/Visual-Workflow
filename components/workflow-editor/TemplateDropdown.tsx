@@ -5,6 +5,7 @@ import { X, Search } from 'lucide-react';
 import { Template, NodeType } from '@/lib/schema';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { templatesApi } from '@/lib/api-client';
 
 interface TemplateDropdownProps {
   nodeType: NodeType;
@@ -35,13 +36,11 @@ export function TemplateDropdown({
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch(`/api/templates?node_type=${nodeType}`);
-      if (response.ok) {
-        const data = await response.json();
-        setTemplates(data);
-      }
+      const data = await templatesApi.list({ nodeType });
+      setTemplates(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching templates:', error);
+      setTemplates([]);
     } finally {
       setLoading(false);
     }

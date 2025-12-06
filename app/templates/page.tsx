@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TemplateForm } from '@/components/template-manager/TemplateForm';
 import { Template } from '@/lib/schema';
+import { templatesApi } from '@/lib/api-client';
 
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -27,13 +28,11 @@ export default function TemplatesPage() {
 
   const fetchTemplates = async () => {
     try {
-      const response = await fetch('/api/templates');
-      if (response.ok) {
-        const data = await response.json();
-        setTemplates(data);
-      }
+      const data = await templatesApi.list();
+      setTemplates(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching templates:', error);
+      setTemplates([]);
     } finally {
       setLoading(false);
     }
@@ -65,12 +64,9 @@ export default function TemplatesPage() {
     if (!confirm('Are you sure you want to delete this template?')) return;
 
     try {
-      const response = await fetch(`/api/templates/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        fetchTemplates();
+      const success = await templatesApi.delete(id);
+      if (success) {
+        setTemplates((prev) => prev.filter((t) => t.id !== id));
       }
     } catch (error) {
       console.error('Error deleting template:', error);

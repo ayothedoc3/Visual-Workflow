@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { templates } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
+
+// Check if database is available
+async function isDatabaseAvailable() {
+  try {
+    if (!process.env.DATABASE_URL || process.env.DATABASE_URL === 'postgresql://user:password@host:port/database') {
+      return false;
+    }
+    const { db } = await import('@/lib/db');
+    await db.execute('SELECT 1' as any);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // GET /api/templates/[id] - Get single template
 export async function GET(
@@ -10,6 +22,17 @@ export async function GET(
 ) {
   try {
     const params = await context.params;
+    const dbAvailable = await isDatabaseAvailable();
+
+    if (!dbAvailable) {
+      return NextResponse.json(
+        { useClientStorage: true, id: params.id },
+        { status: 200, headers: { 'X-Storage-Mode': 'client' } }
+      );
+    }
+
+    const { db } = await import('@/lib/db');
+    const { templates } = await import('@/lib/schema');
     const result = await db
       .select()
       .from(templates)
@@ -40,6 +63,17 @@ export async function PUT(
   try {
     const params = await context.params;
     const body = await request.json();
+    const dbAvailable = await isDatabaseAvailable();
+
+    if (!dbAvailable) {
+      return NextResponse.json(
+        { useClientStorage: true, id: params.id, data: body },
+        { status: 200, headers: { 'X-Storage-Mode': 'client' } }
+      );
+    }
+
+    const { db } = await import('@/lib/db');
+    const { templates } = await import('@/lib/schema');
 
     const updateData: any = {
       updatedAt: new Date(),
@@ -82,6 +116,17 @@ export async function DELETE(
 ) {
   try {
     const params = await context.params;
+    const dbAvailable = await isDatabaseAvailable();
+
+    if (!dbAvailable) {
+      return NextResponse.json(
+        { useClientStorage: true, id: params.id },
+        { status: 200, headers: { 'X-Storage-Mode': 'client' } }
+      );
+    }
+
+    const { db } = await import('@/lib/db');
+    const { templates } = await import('@/lib/schema');
     const result = await db
       .delete(templates)
       .where(eq(templates.id, params.id))

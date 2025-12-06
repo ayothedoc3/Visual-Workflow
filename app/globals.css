@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   /* Interface Colors */
@@ -13,18 +15,6 @@
   --action: #3B82F6;
   --resource: #10B981;
   --deliverable: #8B5CF6;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-canvas: var(--canvas);
-  --color-border: var(--border);
-  --color-text-primary: var(--text-primary);
-  --color-text-secondary: var(--text-secondary);
-  --color-issue: var(--issue);
-  --color-action: var(--action);
-  --color-resource: var(--resource);
-  --color-deliverable: var(--deliverable);
 }
 
 body {

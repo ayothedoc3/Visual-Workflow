@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Workflow } from '@/lib/schema';
 import { useRouter } from 'next/navigation';
+import { workflowsApi } from '@/lib/api-client';
 
 export default function WorkflowsPage() {
   const router = useRouter();
@@ -25,13 +26,11 @@ export default function WorkflowsPage() {
 
   const fetchWorkflows = async () => {
     try {
-      const response = await fetch('/api/workflows');
-      if (response.ok) {
-        const data = await response.json();
-        setWorkflows(data);
-      }
+      const data = await workflowsApi.list();
+      setWorkflows(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching workflows:', error);
+      setWorkflows([]);
     } finally {
       setLoading(false);
     }
@@ -53,16 +52,13 @@ export default function WorkflowsPage() {
     if (!confirm(`Duplicate workflow "${name}"?`)) return;
 
     try {
-      const response = await fetch(`/api/workflows/${id}/duplicate`, {
-        method: 'POST',
-      });
-
-      if (response.ok) {
-        const newWorkflow = await response.json();
+      const newWorkflow = await workflowsApi.duplicate(id);
+      if (newWorkflow) {
+        setWorkflows((prev) => [newWorkflow, ...prev]);
         router.push(`/workflows/${newWorkflow.id}`);
-      } else {
-        alert('Failed to duplicate workflow');
+        return;
       }
+      alert('Failed to duplicate workflow');
     } catch (error) {
       console.error('Error duplicating workflow:', error);
       alert('Failed to duplicate workflow');
@@ -73,15 +69,12 @@ export default function WorkflowsPage() {
     if (!confirm(`Delete workflow "${name}"? This cannot be undone.`)) return;
 
     try {
-      const response = await fetch(`/api/workflows/${id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        fetchWorkflows();
-      } else {
-        alert('Failed to delete workflow');
+      const success = await workflowsApi.delete(id);
+      if (success) {
+        setWorkflows((prev) => prev.filter((workflow) => workflow.id !== id));
+        return;
       }
+      alert('Failed to delete workflow');
     } catch (error) {
       console.error('Error deleting workflow:', error);
       alert('Failed to delete workflow');
@@ -160,7 +153,7 @@ export default function WorkflowsPage() {
                 {/* Thumbnail placeholder */}
                 <div className="h-40 bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center border-b border-gray-200">
                   <div className="text-gray-400 text-sm">
-                    {(workflow.nodes as any[])?.length || 0} nodes
+                    {Array.isArray(workflow.nodes) ? workflow.nodes.length : 0} nodes
                   </div>
                 </div>
 
@@ -179,7 +172,7 @@ export default function WorkflowsPage() {
                   <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                     <span>Updated {formatDate(workflow.updatedAt)}</span>
                     <span>
-                      {(workflow.edges as any[])?.length || 0} connections
+                      {Array.isArray(workflow.edges) ? workflow.edges.length : 0} connections
                     </span>
                   </div>
 

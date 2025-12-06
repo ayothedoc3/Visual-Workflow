@@ -1,6 +1,7 @@
 'use client';
 
 import { AlertCircle, Play, Wrench, CheckCircle } from 'lucide-react';
+import Link from 'next/link';
 
 const nodeTypes = [
   {
@@ -78,13 +79,19 @@ export function NodeSelector() {
         })}
       </div>
 
-      <div className="mt-8 pt-8 border-t border-gray-200">
-        <button className="w-full text-sm text-blue-600 hover:text-blue-700 font-medium">
+      <div className="mt-8 pt-8 border-t border-gray-200 space-y-2">
+        <Link
+          href="/templates"
+          className="block w-full text-sm text-blue-600 hover:text-blue-700 font-medium text-center py-2 hover:bg-blue-50 rounded transition-colors"
+        >
           Templates →
-        </button>
-        <button className="w-full text-sm text-blue-600 hover:text-blue-700 font-medium mt-2">
+        </Link>
+        <Link
+          href="/workflows"
+          className="block w-full text-sm text-blue-600 hover:text-blue-700 font-medium text-center py-2 hover:bg-blue-50 rounded transition-colors"
+        >
           Workflows →
-        </button>
+        </Link>
       </div>
     </div>
   );

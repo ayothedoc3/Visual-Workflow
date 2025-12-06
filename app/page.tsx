@@ -17,7 +17,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <Link href="/workflows">
+          <Link href="/workflows" className="block">
             <div className="p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all cursor-pointer">
               <Workflow className="w-12 h-12 text-blue-500 mb-4" />
               <h2 className="text-xl font-semibold mb-2">Workflows</h2>
@@ -25,7 +25,7 @@ export default function Home() {
             </div>
           </Link>
 
-          <Link href="/templates">
+          <Link href="/templates" className="block">
             <div className="p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:shadow-lg transition-all cursor-pointer">
               <Library className="w-12 h-12 text-green-500 mb-4" />
               <h2 className="text-xl font-semibold mb-2">Templates</h2>
@@ -33,17 +33,22 @@ export default function Home() {
             </div>
           </Link>
 
-          <div className="p-6 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:shadow-lg transition-all">
+          <div className="p-6 border-2 border-gray-200 rounded-lg opacity-50">
             <FileText className="w-12 h-12 text-purple-500 mb-4" />
             <h2 className="text-xl font-semibold mb-2">Documentation</h2>
             <p className="text-gray-600">Learn how to use the workflow builder</p>
           </div>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 flex gap-4">
+          <Link href="/templates">
+            <Button size="lg" className="text-lg px-8 py-6" variant="outline">
+              Templates →
+            </Button>
+          </Link>
           <Link href="/workflows">
             <Button size="lg" className="text-lg px-8 py-6">
-              Get Started
+              Workflows →
             </Button>
           </Link>
         </div>

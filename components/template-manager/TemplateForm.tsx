@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Template, NodeType } from '@/lib/schema';
 import { X } from 'lucide-react';
+import { templatesApi } from '@/lib/api-client';
 
 interface TemplateFormProps {
   template?: Template;
@@ -32,22 +33,16 @@ export function TemplateForm({ template, onClose, onSave }: TemplateFormProps) {
     setError('');
 
     try {
-      const url = template
-        ? `/api/templates/${template.id}`
-        : '/api/templates';
+      const payload = {
+        ...formData,
+        tags: formData.tags.split(',').map((t) => t.trim()).filter(Boolean),
+      };
 
-      const method = template ? 'PUT' : 'POST';
+      const saved = template
+        ? await templatesApi.update(template.id, payload)
+        : await templatesApi.create(payload);
 
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          tags: formData.tags.split(',').map(t => t.trim()).filter(Boolean),
-        }),
-      });
-
-      if (!response.ok) {
+      if (!saved) {
         throw new Error('Failed to save template');
       }
 

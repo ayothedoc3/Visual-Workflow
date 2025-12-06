@@ -7,17 +7,22 @@ import { Button } from '@/components/ui/button';
 import { Save, Download, ArrowLeft, Check } from 'lucide-react';
 import Link from 'next/link';
 import { Node, Edge } from 'reactflow';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
+import { workflowsApi } from '@/lib/api-client';
+// Import seed-templates to auto-seed templates in localStorage
+import '@/lib/seed-templates';
 
-export default function WorkflowEditorPage({ params }: { params: { id: string } }) {
+export default function WorkflowEditorPage() {
   const router = useRouter();
+  const params = useParams<{ id: string }>();
+  const paramId = params?.id;
   const [workflowId, setWorkflowId] = useState<string | null>(
-    params.id === 'new' ? null : params.id
+    paramId === 'new' ? null : paramId || null
   );
   const [workflowName, setWorkflowName] = useState('Untitled Workflow');
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
-  const [loading, setLoading] = useState(params.id !== 'new');
+  const [loading, setLoading] = useState(paramId !== 'new');
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
@@ -26,10 +31,10 @@ export default function WorkflowEditorPage({ params }: { params: { id: string } 
 
   // Load workflow if editing existing
   useEffect(() => {
-    if (params.id !== 'new') {
-      loadWorkflow(params.id);
+    if (paramId && paramId !== 'new') {
+      loadWorkflow(paramId);
     }
-  }, [params.id]);
+  }, [paramId]);
 
   // Auto-save every 30 seconds
   useEffect(() => {
@@ -56,20 +61,20 @@ export default function WorkflowEditorPage({ params }: { params: { id: string } 
   const loadWorkflow = async (id: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/workflows/${id}`);
+      const workflow = await workflowsApi.get(id);
 
-      if (!response.ok) {
+      if (!workflow) {
         throw new Error('Failed to load workflow');
       }
 
-      const workflow = await response.json();
       setWorkflowName(workflow.name);
-      setNodes(workflow.nodes || []);
-      setEdges(workflow.edges || []);
-      setLastSaved(new Date(workflow.updatedAt));
+      setNodes((workflow.nodes as Node[]) || []);
+      setEdges((workflow.edges as Edge[]) || []);
+      setLastSaved(workflow.updatedAt ? new Date(workflow.updatedAt) : null);
     } catch (error) {
       console.error('Error loading workflow:', error);
       alert('Failed to load workflow');
+      router.push('/workflows');
     } finally {
       setLoading(false);
     }
@@ -87,29 +92,18 @@ export default function WorkflowEditorPage({ params }: { params: { id: string } 
         edges,
       };
 
-      let response;
-
+      let savedWorkflow;
       if (workflowId) {
         // Update existing workflow
-        response = await fetch(`/api/workflows/${workflowId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(workflowData),
-        });
+        savedWorkflow = await workflowsApi.update(workflowId, workflowData);
       } else {
         // Create new workflow
-        response = await fetch('/api/workflows', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(workflowData),
-        });
+        savedWorkflow = await workflowsApi.create(workflowData);
       }
 
-      if (!response.ok) {
+      if (!savedWorkflow) {
         throw new Error('Failed to save workflow');
       }
-
-      const savedWorkflow = await response.json();
 
       // If this was a new workflow, update the ID and URL
       if (!workflowId) {
@@ -117,7 +111,7 @@ export default function WorkflowEditorPage({ params }: { params: { id: string } 
         router.replace(`/workflows/${savedWorkflow.id}`);
       }
 
-      setLastSaved(new Date());
+      setLastSaved(savedWorkflow.updatedAt ? new Date(savedWorkflow.updatedAt) : new Date());
 
       if (!isAutoSave) {
         // Show success message for manual saves

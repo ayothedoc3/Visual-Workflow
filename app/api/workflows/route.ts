@@ -1,11 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { workflows } from '@/lib/schema';
-import { like, desc } from 'drizzle-orm';
+
+// Check if database is available
+async function isDatabaseAvailable() {
+  try {
+    if (!process.env.DATABASE_URL || process.env.DATABASE_URL === 'postgresql://user:password@host:port/database') {
+      return false;
+    }
+    const { db } = await import('@/lib/db');
+    await db.execute('SELECT 1' as any);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // GET /api/workflows - List all workflows
 export async function GET(request: NextRequest) {
   try {
+    const dbAvailable = await isDatabaseAvailable();
+
+    if (!dbAvailable) {
+      // Return signal to use client-side storage
+      return NextResponse.json(
+        { useClientStorage: true },
+        { status: 200, headers: { 'X-Storage-Mode': 'client' } }
+      );
+    }
+
+    const { db } = await import('@/lib/db');
+    const { workflows } = await import('@/lib/schema');
+    const { like, desc } = await import('drizzle-orm');
+
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search');
 
@@ -39,6 +64,19 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    const dbAvailable = await isDatabaseAvailable();
+
+    if (!dbAvailable) {
+      // Return signal to use client-side storage
+      return NextResponse.json(
+        { useClientStorage: true, data: body },
+        { status: 201, headers: { 'X-Storage-Mode': 'client' } }
+      );
+    }
+
+    const { db } = await import('@/lib/db');
+    const { workflows } = await import('@/lib/schema');
 
     const newWorkflow = await db.insert(workflows).values({
       name: body.name,

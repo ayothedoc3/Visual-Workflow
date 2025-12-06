@@ -1,11 +1,34 @@
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db';
-import { templates } from '@/lib/schema';
 import { seedTemplates } from '@/lib/seed-data';
+
+// Check if database is available
+async function isDatabaseAvailable() {
+  try {
+    if (!process.env.DATABASE_URL || process.env.DATABASE_URL === 'postgresql://user:password@host:port/database') {
+      return false;
+    }
+    const { db } = await import('@/lib/db');
+    await db.execute('SELECT 1' as any);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 // POST /api/templates/seed - Seed initial templates
 export async function POST() {
   try {
+    const dbAvailable = await isDatabaseAvailable();
+
+    if (!dbAvailable) {
+      return NextResponse.json(
+        { useClientStorage: true },
+        { status: 200, headers: { 'X-Storage-Mode': 'client' } }
+      );
+    }
+
+    const { db } = await import('@/lib/db');
+    const { templates } = await import('@/lib/schema');
     // Check if templates already exist
     const existing = await db.select().from(templates);
 
@@ -42,6 +65,17 @@ export async function POST() {
 // GET /api/templates/seed - Check seed status
 export async function GET() {
   try {
+    const dbAvailable = await isDatabaseAvailable();
+
+    if (!dbAvailable) {
+      return NextResponse.json(
+        { useClientStorage: true, seeded: false, count: 0, ready: false },
+        { status: 200, headers: { 'X-Storage-Mode': 'client' } }
+      );
+    }
+
+    const { db } = await import('@/lib/db');
+    const { templates } = await import('@/lib/schema');
     const existing = await db.select().from(templates);
 
     return NextResponse.json({
