@@ -5,7 +5,7 @@ import { Plus, Search, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TemplateForm } from '@/components/template-manager/TemplateForm';
-import { Template } from '@/lib/schema';
+import type { Template } from '@/lib/storage';
 import { templatesApi } from '@/lib/api-client';
 
 export default function TemplatesPage() {

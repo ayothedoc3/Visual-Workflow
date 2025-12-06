@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { X, Search } from 'lucide-react';
-import { Template, NodeType } from '@/lib/schema';
+import type { Template } from '@/lib/storage';
+import type { NodeType } from '@/lib/schema';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { templatesApi } from '@/lib/api-client';

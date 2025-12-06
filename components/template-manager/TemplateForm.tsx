@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Template, NodeType } from '@/lib/schema';
+import type { Template } from '@/lib/storage';
+import type { NodeType } from '@/lib/schema';
 import { X } from 'lucide-react';
 import { templatesApi } from '@/lib/api-client';
 

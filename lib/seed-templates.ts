@@ -17,8 +17,8 @@ export function seedToLocalStorage(): { count: number } {
       name: template.name,
       description: template.description,
       category: template.category,
-      tags: template.tags,
-      metadata: template.metadata,
+      tags: template.tags || [],
+      metadata: (template.metadata as Record<string, any>) || {},
     });
     count++;
   }

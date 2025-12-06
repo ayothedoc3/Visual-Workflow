@@ -1,5 +1,27 @@
 // Client-side API wrapper that handles localStorage fallback
 import { workflowStorage, templateStorage, type Workflow, type Template } from './storage';
+import type { Template as DBTemplate, Workflow as DBWorkflow } from './schema';
+
+// Helper to convert DB types to storage types
+function normalizeTemplate(t: DBTemplate): Template {
+  return {
+    ...t,
+    tags: t.tags || [],
+    metadata: (t.metadata as Record<string, any>) || {},
+    createdAt: t.createdAt instanceof Date ? t.createdAt.toISOString() : String(t.createdAt),
+    updatedAt: t.updatedAt instanceof Date ? t.updatedAt.toISOString() : String(t.updatedAt),
+  };
+}
+
+function normalizeWorkflow(w: DBWorkflow): Workflow {
+  return {
+    ...w,
+    nodes: w.nodes as any[],
+    edges: w.edges as any[],
+    createdAt: w.createdAt instanceof Date ? w.createdAt.toISOString() : String(w.createdAt),
+    updatedAt: w.updatedAt instanceof Date ? w.updatedAt.toISOString() : String(w.updatedAt),
+  };
+}
 
 // Workflow API client
 export const workflowsApi = {
@@ -13,7 +35,7 @@ export const workflowsApi = {
       return search ? workflowStorage.search(search) : workflowStorage.getAll();
     }
 
-    return data;
+    return Array.isArray(data) ? data.map(normalizeWorkflow) : [];
   },
 
   async get(id: string): Promise<Workflow | null> {
@@ -124,7 +146,7 @@ export const templatesApi = {
       });
     }
 
-    return data;
+    return Array.isArray(data) ? data.map(normalizeTemplate) : [];
   },
 
   async get(id: string): Promise<Template | null> {

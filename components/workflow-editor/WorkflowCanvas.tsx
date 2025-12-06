@@ -15,6 +15,8 @@ import ReactFlow, {
   useEdgesState,
   Connection,
   BackgroundVariant,
+  MarkerType,
+  ConnectionLineType,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -32,10 +34,10 @@ const nodeTypes = {
 
 const defaultEdgeOptions = {
   animated: true,
-  type: 'smoothstep',
+  type: 'smoothstep' as const,
   style: { stroke: '#94A3B8', strokeWidth: 3 },
   markerEnd: {
-    type: 'arrowclosed' as const,
+    type: MarkerType.ArrowClosed,
     color: '#94A3B8',
   },
 };
@@ -124,7 +126,7 @@ export function WorkflowCanvas({
         snapToGrid={true}
         snapGrid={[15, 15]}
         connectionLineStyle={{ stroke: '#94A3B8', strokeWidth: 3 }}
-        connectionLineType="smoothstep"
+        connectionLineType={ConnectionLineType.SmoothStep}
         deleteKeyCode="Delete"
         selectNodesOnDrag={true}
         panOnDrag={[1, 2]}

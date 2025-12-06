@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Plus, Search, Copy, Trash2, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Workflow } from '@/lib/schema';
+import type { Workflow } from '@/lib/storage';
 import { useRouter } from 'next/navigation';
 import { workflowsApi } from '@/lib/api-client';
 

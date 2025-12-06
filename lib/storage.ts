@@ -1,30 +1,22 @@
 // Storage utility that uses browser localStorage as fallback when database is not available
 // This allows testing without database, then seamless migration to database later
 
-export interface Workflow {
-  id: string;
-  name: string;
-  description: string | null;
-  thumbnail: string | null;
+import type { Workflow as DBWorkflow, Template as DBTemplate } from './schema';
+
+// Storage types use string dates (from JSON serialization) instead of Date objects
+export type Workflow = Omit<DBWorkflow, 'createdAt' | 'updatedAt' | 'nodes' | 'edges'> & {
   nodes: any[];
   edges: any[];
-  createdBy: string | null;
   createdAt: string;
   updatedAt: string;
-}
+};
 
-export interface Template {
-  id: string;
-  nodeType: string;
-  name: string;
-  description: string | null;
-  category: string;
+export type Template = Omit<DBTemplate, 'createdAt' | 'updatedAt' | 'tags' | 'metadata'> & {
   tags: string[];
   metadata: Record<string, any>;
-  createdBy: string | null;
   createdAt: string;
   updatedAt: string;
-}
+};
 
 // Check if we're in browser environment
 const isBrowser = typeof window !== 'undefined';
@@ -137,7 +129,7 @@ export const templateStorage = {
     const now = new Date().toISOString();
     const newTemplate: Template = {
       id: generateId(),
-      nodeType: template.nodeType || 'action',
+      nodeType: (template.nodeType || 'action') as any,
       name: template.name || 'Untitled Template',
       description: template.description || null,
       category: template.category || 'General',

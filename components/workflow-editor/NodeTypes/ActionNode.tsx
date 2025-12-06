@@ -5,7 +5,7 @@ import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
 import { Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TemplateDropdown } from '../TemplateDropdown';
-import { Template } from '@/lib/schema';
+import type { Template } from '@/lib/storage';
 
 export const ActionNode = memo(({ data, id }: NodeProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
