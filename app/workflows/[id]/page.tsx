@@ -127,10 +127,33 @@ export default function WorkflowEditorPage() {
     }
   }, [workflowId, workflowName, nodes, edges, router]);
 
-  const handleExport = () => {
-    console.log('Exporting workflow');
-    // TODO: Implement export functionality (Phase 4)
-    alert('Export feature coming in Phase 4!');
+  const handleExport = async () => {
+    try {
+      const { toPng } = await import('html-to-image');
+      const canvasElement = document.querySelector('.react-flow') as HTMLElement;
+
+      if (!canvasElement) {
+        throw new Error('Canvas element not found');
+      }
+
+      // Generate PNG
+      const dataUrl = await toPng(canvasElement, {
+        backgroundColor: '#ffffff',
+        quality: 1.0,
+        pixelRatio: 2, // Higher resolution
+      });
+
+      // Download
+      const link = document.createElement('a');
+      link.download = `${workflowName.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.png`;
+      link.href = dataUrl;
+      link.click();
+
+      alert('Workflow exported successfully!');
+    } catch (error) {
+      console.error('Error exporting workflow:', error);
+      alert('Failed to export workflow. Please try again.');
+    }
   };
 
   const formatLastSaved = () => {
