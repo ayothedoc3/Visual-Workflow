@@ -38,13 +38,16 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
-// TypeScript types
-export type Template = typeof templates.$inferSelect;
-export type NewTemplate = typeof templates.$inferInsert;
+// Node type enum
+export type NodeType = 'issue' | 'action' | 'resource' | 'deliverable';
+
+// TypeScript types with proper nodeType
+type TemplateBase = typeof templates.$inferSelect;
+type NewTemplateBase = typeof templates.$inferInsert;
+
+export type Template = Omit<TemplateBase, 'nodeType'> & { nodeType: NodeType };
+export type NewTemplate = Omit<NewTemplateBase, 'nodeType'> & { nodeType: NodeType };
 export type Workflow = typeof workflows.$inferSelect;
 export type NewWorkflow = typeof workflows.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
-
-// Node type enum
-export type NodeType = 'issue' | 'action' | 'resource' | 'deliverable';
