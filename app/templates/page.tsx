@@ -29,7 +29,22 @@ export default function TemplatesPage() {
   const fetchTemplates = async () => {
     try {
       const data = await templatesApi.list();
-      setTemplates(Array.isArray(data) ? data : []);
+
+      // If no templates found, try to seed them
+      if (!data || data.length === 0) {
+        console.log('No templates found, seeding...');
+        try {
+          await templatesApi.seed();
+          // Fetch again after seeding
+          const seededData = await templatesApi.list();
+          setTemplates(Array.isArray(seededData) ? seededData : []);
+        } catch (seedError) {
+          console.error('Error seeding templates:', seedError);
+          setTemplates([]);
+        }
+      } else {
+        setTemplates(Array.isArray(data) ? data : []);
+      }
     } catch (error) {
       console.error('Error fetching templates:', error);
       setTemplates([]);
