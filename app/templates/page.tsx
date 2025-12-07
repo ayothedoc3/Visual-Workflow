@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TemplateForm } from '@/components/template-manager/TemplateForm';
+import { AITemplateDialog } from '@/components/template-manager/AITemplateDialog';
 import type { Template } from '@/lib/storage';
 import { templatesApi } from '@/lib/api-client';
 
@@ -13,6 +14,7 @@ export default function TemplatesPage() {
   const [filteredTemplates, setFilteredTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [showAIDialog, setShowAIDialog] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Template | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNodeType, setSelectedNodeType] = useState<string>('all');
@@ -88,6 +90,20 @@ export default function TemplatesPage() {
     }
   };
 
+  const handleAIGenerate = async (template: Template) => {
+    try {
+      // Save the AI-generated template
+      const saved = await templatesApi.create(template);
+      if (saved) {
+        // Refresh templates list
+        await fetchTemplates();
+      }
+    } catch (error) {
+      console.error('Error saving AI-generated template:', error);
+      alert('Failed to save template');
+    }
+  };
+
   const getNodeTypeColor = (type: string) => {
     switch (type) {
       case 'issue':
@@ -123,10 +139,21 @@ export default function TemplatesPage() {
               {templates.length} template{templates.length !== 1 ? 's' : ''} available
             </p>
           </div>
-          <Button size="lg" onClick={() => { setEditingTemplate(undefined); setShowForm(true); }}>
-            <Plus className="w-5 h-5 mr-2" />
-            Add Template
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              size="lg"
+              variant="outline"
+              onClick={() => setShowAIDialog(true)}
+              className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300 hover:from-purple-100 hover:to-blue-100 text-purple-700"
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Generate with AI
+            </Button>
+            <Button size="lg" onClick={() => { setEditingTemplate(undefined); setShowForm(true); }}>
+              <Plus className="w-5 h-5 mr-2" />
+              Add Template
+            </Button>
+          </div>
         </div>
 
         {/* Search and Filters */}
@@ -238,6 +265,14 @@ export default function TemplatesPage() {
             template={editingTemplate}
             onClose={() => { setShowForm(false); setEditingTemplate(undefined); }}
             onSave={fetchTemplates}
+          />
+        )}
+
+        {/* AI Template Generator Dialog */}
+        {showAIDialog && (
+          <AITemplateDialog
+            onClose={() => setShowAIDialog(false)}
+            onGenerate={handleAIGenerate}
           />
         )}
       </div>

@@ -44,7 +44,7 @@ export const ActionNode = memo(({ data, id }: NodeProps) => {
         </div>
 
         {data.templateId ? (
-          <div>
+          <div className="max-h-[150px] overflow-y-auto">
             <p className="text-sm font-medium text-gray-900 break-words">{data.label}</p>
             {data.description && (
               <p className="text-xs text-gray-500 mt-1 break-words">{data.description}</p>
@@ -53,7 +53,7 @@ export const ActionNode = memo(({ data, id }: NodeProps) => {
               size="sm"
               variant="outline"
               onClick={() => setShowDropdown(true)}
-              className="mt-2 w-full text-xs"
+              className="mt-2 w-full text-xs sticky bottom-0 bg-white"
             >
               Change Template
             </Button>
