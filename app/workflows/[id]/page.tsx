@@ -201,11 +201,11 @@ export default function WorkflowEditorPage() {
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
-      <div className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+      <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
         <div className="flex items-center gap-4">
           <Link href="/workflows">
-            <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+            <Button variant="ghost" size="sm" aria-label="Go back to workflows list">
+              <ArrowLeft className="w-4 h-4 mr-2" aria-hidden="true" />
               Back
             </Button>
           </Link>
@@ -214,15 +214,16 @@ export default function WorkflowEditorPage() {
               type="text"
               value={workflowName}
               onChange={(e) => setWorkflowName(e.target.value)}
+              aria-label="Workflow name"
               className="text-xl font-semibold border-none outline-none focus:ring-2 focus:ring-blue-500 rounded px-2"
             />
             <div className="flex items-center gap-2 px-2">
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-600">
                 {workflowId ? `ID: ${workflowId.slice(0, 8)}...` : 'New workflow'}
               </p>
               {lastSaved && (
-                <div className="flex items-center gap-1 text-xs text-gray-500">
-                  <Check className="w-3 h-3 text-green-600" />
+                <div className="flex items-center gap-1 text-xs text-gray-600">
+                  <Check className="w-3 h-3 text-green-600" aria-hidden="true" />
                   <span>Saved {formatLastSaved()}</span>
                 </div>
               )}
@@ -231,13 +232,14 @@ export default function WorkflowEditorPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="text-xs text-gray-500 mr-2">
+          <div className="text-xs text-gray-700 mr-2">
             <label className="flex items-center gap-1 cursor-pointer">
               <input
                 type="checkbox"
                 checked={autoSaveEnabled}
                 onChange={(e) => setAutoSaveEnabled(e.target.checked)}
                 className="rounded"
+                aria-label="Enable auto-save"
               />
               Auto-save
             </label>
@@ -245,32 +247,34 @@ export default function WorkflowEditorPage() {
           <Button
             variant="outline"
             onClick={() => setShowCopilot(!showCopilot)}
-            className="border-purple-200 hover:bg-purple-50"
+            className="border-purple-300 hover:bg-purple-50 text-purple-700"
+            aria-label={showCopilot ? 'Hide AI Co-Pilot' : 'Show AI Co-Pilot'}
           >
-            <Brain className="w-4 h-4 mr-2 text-purple-600" />
+            <Brain className="w-4 h-4 mr-2" aria-hidden="true" />
             Co-Pilot
           </Button>
           <Button
             variant="outline"
             onClick={() => setShowAIDialog(true)}
-            className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100"
+            className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300 hover:from-purple-100 hover:to-blue-100 text-purple-700"
+            aria-label="Generate workflow with AI"
           >
-            <Sparkles className="w-4 h-4 mr-2 text-purple-600" />
+            <Sparkles className="w-4 h-4 mr-2" aria-hidden="true" />
             Generate with AI
           </Button>
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" />
+          <Button variant="outline" onClick={handleExport} aria-label="Export workflow as image">
+            <Download className="w-4 h-4 mr-2" aria-hidden="true" />
             Export
           </Button>
-          <Button onClick={() => handleSave(false)} disabled={saving}>
-            <Save className="w-4 h-4 mr-2" />
+          <Button onClick={() => handleSave(false)} disabled={saving} aria-label="Save workflow">
+            <Save className="w-4 h-4 mr-2" aria-hidden="true" />
             {saving ? 'Saving...' : 'Save'}
           </Button>
         </div>
-      </div>
+      </header>
 
       {/* Main content */}
-      <div className="flex-1 flex overflow-hidden">
+      <main className="flex-1 flex overflow-hidden">
         <NodeSelector />
         <div className="flex-1">
           <WorkflowCanvas
@@ -287,7 +291,7 @@ export default function WorkflowEditorPage() {
             onClose={() => setShowCopilot(false)}
           />
         )}
-      </div>
+      </main>
 
       {/* AI Generate Dialog */}
       {showAIDialog && (
