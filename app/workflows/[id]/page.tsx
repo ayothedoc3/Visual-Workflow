@@ -3,8 +3,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { WorkflowCanvas } from '@/components/workflow-editor/WorkflowCanvas';
 import { NodeSelector } from '@/components/workflow-editor/NodeSelector';
+import { AIGenerateDialog } from '@/components/workflow-editor/AIGenerateDialog';
+import { WorkflowCopilot } from '@/components/workflow-editor/WorkflowCopilot';
 import { Button } from '@/components/ui/button';
-import { Save, Download, ArrowLeft, Check } from 'lucide-react';
+import { Save, Download, ArrowLeft, Check, Sparkles, Brain } from 'lucide-react';
 import Link from 'next/link';
 import { Node, Edge } from 'reactflow';
 import { useRouter, useParams } from 'next/navigation';
@@ -26,6 +28,8 @@ export default function WorkflowEditorPage() {
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const [showAIDialog, setShowAIDialog] = useState(false);
+  const [showCopilot, setShowCopilot] = useState(true);
 
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -156,6 +160,21 @@ export default function WorkflowEditorPage() {
     }
   };
 
+  const handleAIGenerate = (workflow: any) => {
+    // Set generated workflow name and data
+    if (workflow.name) {
+      setWorkflowName(workflow.name);
+    }
+    setNodes(workflow.nodes || []);
+    setEdges(workflow.edges || []);
+
+    // Show success message with suggestions
+    const suggestions = workflow.metadata?.suggestions || [];
+    if (suggestions.length > 0) {
+      alert(`Workflow generated successfully!\n\n${suggestions.slice(0, 3).join('\n')}`);
+    }
+  };
+
   const formatLastSaved = () => {
     if (!lastSaved) return '';
 
@@ -223,6 +242,22 @@ export default function WorkflowEditorPage() {
               Auto-save
             </label>
           </div>
+          <Button
+            variant="outline"
+            onClick={() => setShowCopilot(!showCopilot)}
+            className="border-purple-200 hover:bg-purple-50"
+          >
+            <Brain className="w-4 h-4 mr-2 text-purple-600" />
+            Co-Pilot
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setShowAIDialog(true)}
+            className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200 hover:from-purple-100 hover:to-blue-100"
+          >
+            <Sparkles className="w-4 h-4 mr-2 text-purple-600" />
+            Generate with AI
+          </Button>
           <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
             Export
@@ -245,7 +280,22 @@ export default function WorkflowEditorPage() {
             onEdgesChange={setEdges}
           />
         </div>
+        {showCopilot && (
+          <WorkflowCopilot
+            nodes={nodes}
+            edges={edges}
+            onClose={() => setShowCopilot(false)}
+          />
+        )}
       </div>
+
+      {/* AI Generate Dialog */}
+      {showAIDialog && (
+        <AIGenerateDialog
+          onClose={() => setShowAIDialog(false)}
+          onGenerate={handleAIGenerate}
+        />
+      )}
     </div>
   );
 }

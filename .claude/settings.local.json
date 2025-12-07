@@ -25,7 +25,12 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git config:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(npm run build:*)",
+      "Bash(if exist \"components\\workflow-editor\\NodeTypes\\nul\" del \"components\\workflow-editor\\NodeTypes\\nul\")",
+      "Bash(git reset:*)",
+      "Bash(node test-db.js:*)",
+      "Bash(del:*)"
     ],
     "deny": [],
     "ask": []
