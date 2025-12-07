@@ -1,8 +1,12 @@
 import { Pool } from '@neondatabase/serverless';
 import { readFileSync } from 'fs';
+import * as dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config({ path: '.env.local' });
 
 const pool = new Pool({
-  connectionString: 'postgresql://neondb_owner:npg_Do1fLFSKXpr5@ep-dark-silence-a2al1i7l-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require'
+  connectionString: process.env.DATABASE_URL
 });
 
 const sql = readFileSync('./setup-db.sql', 'utf8');

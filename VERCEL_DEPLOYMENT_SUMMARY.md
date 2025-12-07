@@ -45,8 +45,10 @@ Click **"Environment Variables"** and add:
 
 **Value:**
 ```
-postgresql://neondb_owner:npg_Do1fLFSKXpr5@ep-dark-silence-a2al1i7l-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require
+postgresql://neondb_owner:<YOUR_PASSWORD>@ep-dark-silence-a2al1i7l-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require
 ```
+
+**IMPORTANT:** Replace `<YOUR_PASSWORD>` with your actual Neon database password from the Neon console.
 
 **Environment:** Production, Preview, Development (select all)
 
