@@ -3,19 +3,20 @@ import { NextResponse } from 'next/server';
 // Health check endpoint for database availability
 export async function GET() {
   try {
+    const { getDatabaseUrl } = await import('@/lib/db');
+    const databaseUrl = getDatabaseUrl();
+
     // Check if DATABASE_URL is configured
-    if (!process.env.DATABASE_URL || process.env.DATABASE_URL === 'postgresql://user:password@host:port/database') {
+    if (!databaseUrl || databaseUrl === 'postgresql://user:password@host:port/database') {
       return NextResponse.json(
         { available: false, reason: 'Database not configured' },
         { status: 503 }
       );
     }
 
-    // Try to import db module
-    const { db } = await import('@/lib/db');
-
-    // Simple query to test connection
-    await db.execute('SELECT 1' as any);
+    const { Pool } = await import('@neondatabase/serverless');
+    const pool = new Pool({ connectionString: databaseUrl });
+    await pool.query('SELECT 1');
 
     return NextResponse.json({ available: true }, { status: 200 });
   } catch (error) {

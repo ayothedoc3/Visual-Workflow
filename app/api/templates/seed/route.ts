@@ -27,7 +27,8 @@ export async function POST() {
       );
     }
 
-    const { db } = await import('@/lib/db');
+    const { getDb } = await import('@/lib/db');
+    const db = getDb();
     const { templates } = await import('@/lib/schema');
     // Check if templates already exist
     const existing = await db.select().from(templates);
@@ -74,7 +75,8 @@ export async function GET() {
       );
     }
 
-    const { db } = await import('@/lib/db');
+    const { getDb } = await import('@/lib/db');
+    const db = getDb();
     const { templates } = await import('@/lib/schema');
     const existing = await db.select().from(templates);
 

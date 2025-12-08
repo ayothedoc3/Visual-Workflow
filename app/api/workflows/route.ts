@@ -6,7 +6,8 @@ async function isDatabaseAvailable() {
     if (!process.env.DATABASE_URL || process.env.DATABASE_URL === 'postgresql://user:password@host:port/database') {
       return false;
     }
-    const { db } = await import('@/lib/db');
+    const { getDb } = await import('@/lib/db');
+    const db = getDb();
     await db.execute('SELECT 1' as any);
     return true;
   } catch {
@@ -27,7 +28,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { db } = await import('@/lib/db');
+    const { getDb } = await import('@/lib/db');
+    const db = getDb();
     const { workflows } = await import('@/lib/schema');
     const { like, desc } = await import('drizzle-orm');
 

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { getDatabaseUrl } from '@/lib/db';
 
 // GET /api/campaigns/[id] - Get single campaign with playbook counts
 export async function GET(
@@ -9,6 +8,11 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const databaseUrl = getDatabaseUrl();
+    if (!databaseUrl) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+    const sql = neon(databaseUrl);
     const { id } = await params;
 
     // Get campaign with playbook count
@@ -45,6 +49,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const databaseUrl = getDatabaseUrl();
+    if (!databaseUrl) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+    const sql = neon(databaseUrl);
     const { id } = await params;
     const body = await request.json();
     const {
@@ -97,6 +106,11 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const databaseUrl = getDatabaseUrl();
+    if (!databaseUrl) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+    const sql = neon(databaseUrl);
     const { id } = await params;
 
     const result = await sql`

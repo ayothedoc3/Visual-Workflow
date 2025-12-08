@@ -7,7 +7,8 @@ async function isDatabaseAvailable() {
     if (!process.env.DATABASE_URL || process.env.DATABASE_URL === 'postgresql://user:password@host:port/database') {
       return false;
     }
-    const { db } = await import('@/lib/db');
+    const { getDb } = await import('@/lib/db');
+    const db = getDb();
     await db.execute('SELECT 1' as any);
     return true;
   } catch {
@@ -31,7 +32,8 @@ export async function GET(
       );
     }
 
-    const { db } = await import('@/lib/db');
+    const { getDb } = await import('@/lib/db');
+    const db = getDb();
     const { templates } = await import('@/lib/schema');
     const result = await db
       .select()
@@ -72,7 +74,8 @@ export async function PUT(
       );
     }
 
-    const { db } = await import('@/lib/db');
+    const { getDb } = await import('@/lib/db');
+    const db = getDb();
     const { templates } = await import('@/lib/schema');
 
     const updateData: any = {
@@ -125,7 +128,8 @@ export async function DELETE(
       );
     }
 
-    const { db } = await import('@/lib/db');
+    const { getDb } = await import('@/lib/db');
+    const db = getDb();
     const { templates } = await import('@/lib/schema');
     const result = await db
       .delete(templates)

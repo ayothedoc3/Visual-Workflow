@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { getDatabaseUrl } from '@/lib/db';
 
 // GET /api/campaigns - List all campaigns
 export async function GET() {
   try {
+    const databaseUrl = getDatabaseUrl();
+    if (!databaseUrl) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+    const sql = neon(databaseUrl);
+
     const campaigns = await sql`
       SELECT
         id,
@@ -37,6 +42,12 @@ export async function GET() {
 // POST /api/campaigns - Create new campaign
 export async function POST(request: NextRequest) {
   try {
+    const databaseUrl = getDatabaseUrl();
+    if (!databaseUrl) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+    const sql = neon(databaseUrl);
+
     const body = await request.json();
     const {
       name,

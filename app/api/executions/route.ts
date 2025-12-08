@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL!);
+import { getDatabaseUrl } from '@/lib/db';
 
 // GET /api/executions?playbookId=xxx - List executions
 export async function GET(request: NextRequest) {
   try {
+    const databaseUrl = getDatabaseUrl();
+    if (!databaseUrl) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+    const sql = neon(databaseUrl);
     const { searchParams } = new URL(request.url);
     const playbookId = searchParams.get('playbookId');
 
@@ -56,6 +60,11 @@ export async function GET(request: NextRequest) {
 // POST /api/executions - Create new execution
 export async function POST(request: NextRequest) {
   try {
+    const databaseUrl = getDatabaseUrl();
+    if (!databaseUrl) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+    const sql = neon(databaseUrl);
     const body = await request.json();
     const {
       name,
