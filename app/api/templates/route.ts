@@ -94,7 +94,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { db } = await import('@/lib/db');
+    const { getDb } = await import('@/lib/db');
+    const db = getDb();
     const { templates } = await import('@/lib/schema');
 
     const newTemplate = await db.insert(templates).values({
