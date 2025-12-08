@@ -30,7 +30,9 @@
       "Bash(if exist \"components\\workflow-editor\\NodeTypes\\nul\" del \"components\\workflow-editor\\NodeTypes\\nul\")",
       "Bash(git reset:*)",
       "Bash(node test-db.js:*)",
-      "Bash(del:*)"
+      "Bash(del:*)",
+      "Bash(ls:*)",
+      "Bash(npx tsx:*)"
     ],
     "deny": [],
     "ask": []
