@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Workflow, Library, FolderKanban } from "lucide-react";
+import { Library, FolderKanban, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -11,46 +11,48 @@ export default function Home() {
             Visual Workflow Builder
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl">
-            Rapidly assemble business process workflows by selecting pre-built templates.
-            Create SOPs, playbooks, and process documentation that can be easily shared as visual diagrams.
+            Strategic execution system with 3-layer hierarchy: Campaigns → Playbooks → Executions.
+            Build complex workflows using reusable templates from your component library.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 max-w-4xl">
           <Link href="/campaigns" className="block">
-            <div className="p-6 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:shadow-lg transition-all cursor-pointer">
-              <FolderKanban className="w-12 h-12 text-purple-500 mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Campaigns</h2>
-              <p className="text-gray-600">3-layer strategic execution system with campaigns, playbooks, and tasks</p>
-            </div>
-          </Link>
-
-          <Link href="/workflows" className="block">
-            <div className="p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all cursor-pointer">
-              <Workflow className="w-12 h-12 text-blue-500 mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Workflows</h2>
-              <p className="text-gray-600">Create and manage your visual workflows</p>
+            <div className="p-8 border-2 border-purple-300 bg-purple-50 rounded-lg hover:border-purple-500 hover:shadow-xl transition-all cursor-pointer">
+              <FolderKanban className="w-16 h-16 text-purple-600 mb-4" />
+              <h2 className="text-2xl font-semibold mb-3 text-purple-900">Campaigns</h2>
+              <p className="text-gray-700 mb-4">Strategic execution with 3-layer drill-down: Campaigns → Playbooks → Executions</p>
+              <div className="flex items-center gap-2 text-sm text-purple-600">
+                <Layers className="w-4 h-4" />
+                <span>Primary workflow system</span>
+              </div>
             </div>
           </Link>
 
           <Link href="/templates" className="block">
-            <div className="p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:shadow-lg transition-all cursor-pointer">
-              <Library className="w-12 h-12 text-green-500 mb-4" />
-              <h2 className="text-xl font-semibold mb-2">Templates</h2>
-              <p className="text-gray-600">Manage your template library</p>
+            <div className="p-8 border-2 border-green-300 bg-green-50 rounded-lg hover:border-green-500 hover:shadow-xl transition-all cursor-pointer">
+              <Library className="w-16 h-16 text-green-600 mb-4" />
+              <h2 className="text-2xl font-semibold mb-3 text-green-900">Templates</h2>
+              <p className="text-gray-700 mb-4">Component library of reusable templates used across all campaigns</p>
+              <div className="flex items-center gap-2 text-sm text-green-600">
+                <Layers className="w-4 h-4" />
+                <span>Template management</span>
+              </div>
             </div>
           </Link>
         </div>
 
-        <div className="mt-8 flex gap-4">
+        <div className="mt-12 flex gap-4">
           <Link href="/campaigns">
-            <Button size="lg" className="text-lg px-8 py-6 bg-purple-600 hover:bg-purple-700">
-              Campaigns →
+            <Button size="lg" className="text-lg px-10 py-7 bg-purple-600 hover:bg-purple-700 shadow-lg">
+              <FolderKanban className="w-5 h-5 mr-2" />
+              Get Started with Campaigns →
             </Button>
           </Link>
-          <Link href="/workflows">
-            <Button size="lg" className="text-lg px-8 py-6" variant="outline">
-              Workflows →
+          <Link href="/templates">
+            <Button size="lg" className="text-lg px-10 py-7 bg-green-600 hover:bg-green-700 shadow-lg">
+              <Library className="w-5 h-5 mr-2" />
+              Manage Templates →
             </Button>
           </Link>
         </div>

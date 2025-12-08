@@ -49,18 +49,6 @@ export function Navbar() {
               </Link>
 
               <Link
-                href="/workflows"
-                className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
-                  isActive('/workflows')
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              >
-                <Workflow className="w-4 h-4" />
-                <span className="text-sm font-medium">Workflows</span>
-              </Link>
-
-              <Link
                 href="/templates"
                 className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
                   isActive('/templates')
