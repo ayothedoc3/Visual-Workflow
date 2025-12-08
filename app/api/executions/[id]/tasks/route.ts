@@ -6,10 +6,10 @@ const sql = neon(process.env.DATABASE_URL!);
 // POST /api/executions/[id]/tasks - Create new task
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const executionId = params.id;
+    const { id: executionId } = await params;
     const body = await request.json();
     const {
       description,
@@ -65,9 +65,10 @@ export async function POST(
 // PUT /api/executions/[id]/tasks?taskId=xxx - Update task
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await params;
     const { searchParams } = new URL(request.url);
     const taskId = searchParams.get('taskId');
 
@@ -126,9 +127,10 @@ export async function PUT(
 // DELETE /api/executions/[id]/tasks?taskId=xxx - Delete task
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await params;
     const { searchParams } = new URL(request.url);
     const taskId = searchParams.get('taskId');
 

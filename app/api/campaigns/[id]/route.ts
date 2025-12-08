@@ -6,10 +6,10 @@ const sql = neon(process.env.DATABASE_URL!);
 // GET /api/campaigns/[id] - Get single campaign with playbook counts
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Get campaign with playbook count
     const result = await sql`
@@ -42,10 +42,10 @@ export async function GET(
 // PUT /api/campaigns/[id] - Update campaign
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const {
       name,
@@ -94,10 +94,10 @@ export async function PUT(
 // DELETE /api/campaigns/[id] - Delete campaign (cascades to playbooks)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const result = await sql`
       DELETE FROM wf_campaigns

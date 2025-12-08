@@ -6,10 +6,10 @@ const sql = neon(process.env.DATABASE_URL!);
 // POST /api/executions/[id]/blockers - Create new blocker
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const executionId = params.id;
+    const { id: executionId } = await params;
     const body = await request.json();
     const {
       description,
@@ -62,9 +62,10 @@ export async function POST(
 // PUT /api/executions/[id]/blockers?blockerId=xxx - Update blocker
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await params;
     const { searchParams } = new URL(request.url);
     const blockerId = searchParams.get('blockerId');
 
@@ -116,9 +117,10 @@ export async function PUT(
 // DELETE /api/executions/[id]/blockers?blockerId=xxx - Delete blocker
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await params;
     const { searchParams } = new URL(request.url);
     const blockerId = searchParams.get('blockerId');
 

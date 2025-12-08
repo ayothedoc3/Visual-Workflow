@@ -6,10 +6,10 @@ const sql = neon(process.env.DATABASE_URL!);
 // GET /api/playbooks/[id] - Get single playbook with execution counts
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const result = await sql`
       SELECT
@@ -44,10 +44,10 @@ export async function GET(
 // PUT /api/playbooks/[id] - Update playbook
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const {
       name,
@@ -94,10 +94,10 @@ export async function PUT(
 // DELETE /api/playbooks/[id] - Delete playbook (cascades to executions)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const result = await sql`
       DELETE FROM wf_playbooks

@@ -6,10 +6,10 @@ const sql = neon(process.env.DATABASE_URL!);
 // POST /api/executions/[id]/resources - Create new resource
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const executionId = params.id;
+    const { id: executionId } = await params;
     const body = await request.json();
     const {
       name,
@@ -59,9 +59,10 @@ export async function POST(
 // PUT /api/executions/[id]/resources?resourceId=xxx - Update resource
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await params;
     const { searchParams } = new URL(request.url);
     const resourceId = searchParams.get('resourceId');
 
@@ -114,9 +115,10 @@ export async function PUT(
 // DELETE /api/executions/[id]/resources?resourceId=xxx - Delete resource
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await params;
     const { searchParams } = new URL(request.url);
     const resourceId = searchParams.get('resourceId');
 

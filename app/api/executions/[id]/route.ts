@@ -6,10 +6,10 @@ const sql = neon(process.env.DATABASE_URL!);
 // GET /api/executions/[id] - Get single execution with all related data
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // Get execution with counts
     const executionResult = await sql`
@@ -74,10 +74,10 @@ export async function GET(
 // PUT /api/executions/[id] - Update execution
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const {
       name,
@@ -132,10 +132,10 @@ export async function PUT(
 // DELETE /api/executions/[id] - Delete execution (cascades to tasks/blockers/resources)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     const result = await sql`
       DELETE FROM wf_executions
