@@ -31,7 +31,8 @@ export async function POST(
       );
     }
 
-    const { db } = await import('@/lib/db');
+    const { getDb } = await import('@/lib/db');
+    const db = getDb();
     const { workflows } = await import('@/lib/schema');
     const { eq } = await import('drizzle-orm');
 

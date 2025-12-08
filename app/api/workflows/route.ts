@@ -77,7 +77,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { db } = await import('@/lib/db');
+    const { getDb } = await import('@/lib/db');
+    const db = getDb();
     const { workflows } = await import('@/lib/schema');
 
     const newWorkflow = await db.insert(workflows).values({
