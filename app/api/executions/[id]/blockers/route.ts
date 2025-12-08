@@ -69,6 +69,11 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const databaseUrl = getDatabaseUrl();
+    if (!databaseUrl) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+    const sql = neon(databaseUrl);
     await params;
     const { searchParams } = new URL(request.url);
     const blockerId = searchParams.get('blockerId');
@@ -129,7 +134,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
     }
     const sql = neon(databaseUrl);
-    await params;
     const { searchParams } = new URL(request.url);
     const blockerId = searchParams.get('blockerId');
 
@@ -139,12 +143,6 @@ export async function DELETE(
         { status: 400 }
       );
     }
-
-    const databaseUrl = getDatabaseUrl();
-    if (!databaseUrl) {
-      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
-    }
-    const sql = neon(databaseUrl);
 
     const result = await sql`
       DELETE FROM wf_blockers
