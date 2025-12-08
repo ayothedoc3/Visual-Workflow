@@ -61,9 +61,15 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
         })}
       </div>
       <div className="mt-4 pt-4 border-t border-gray-200">
-        <p className="text-xs text-gray-500">
-          <strong>Tip:</strong> Connect nodes by dragging from one node's edge to another
+        <p className="text-xs text-gray-500 mb-2">
+          <strong>How to use:</strong>
         </p>
+        <ul className="text-xs text-gray-500 space-y-1 list-disc list-inside">
+          <li>Click button → Enter name</li>
+          <li>Drag nodes to reposition</li>
+          <li>Drag from edge to connect</li>
+          <li>Double-click Action to execute</li>
+        </ul>
       </div>
     </div>
   );
