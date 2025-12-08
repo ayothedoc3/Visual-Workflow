@@ -33,7 +33,6 @@ export async function POST(request: NextRequest) {
         templates = await templatesApi.list();
       } catch (error) {
         console.warn('Could not fetch templates:', error);
-        templates = [];
       }
 
       workflow = await generateWorkflow({
