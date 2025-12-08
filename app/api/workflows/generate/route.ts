@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateWorkflow, generateFromMeetingTranscript } from '@/lib/ai-workflow-generator';
 import { templatesApi } from '@/lib/api-client';
+import { Template } from '@/lib/storage';
 
 // POST /api/workflows/generate - Generate workflow from prompt
 export async function POST(request: NextRequest) {
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
     } else {
       // Generate from text prompt
       // Fetch templates for context
-      let templates;
+      let templates: Template[] = [];
       try {
         templates = await templatesApi.list();
       } catch (error) {

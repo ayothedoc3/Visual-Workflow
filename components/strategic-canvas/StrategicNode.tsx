@@ -101,7 +101,7 @@ export const StrategicNode = memo(({ data }: StrategicNodeProps) => {
           {data.status}
         </span>
         {data.linkedPlaybookId && (
-          <TrendingUp className="w-4 h-4 text-gray-400" title="Linked to playbook" />
+          <TrendingUp className="w-4 h-4 text-gray-400" aria-label="Linked to playbook" />
         )}
       </div>
 
