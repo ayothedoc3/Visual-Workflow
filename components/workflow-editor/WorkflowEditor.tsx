@@ -2,9 +2,10 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { WorkflowCanvas } from './WorkflowCanvas';
+import { NodePalette } from './NodePalette';
 import { Node, Edge } from 'reactflow';
 import { Button } from '@/components/ui/button';
-import { Save, Plus } from 'lucide-react';
+import { Save } from 'lucide-react';
 
 interface WorkflowEditorProps {
   workflowId: string;
@@ -70,6 +71,33 @@ export function WorkflowEditor({
     setHasChanges(true);
   }, []);
 
+  const handleAddNode = useCallback((type: 'issue' | 'action' | 'resource' | 'deliverable') => {
+    const nodeName = prompt(`Enter ${type} name:`);
+    if (!nodeName) return;
+
+    const newNode: Node = {
+      id: `${type}-${Date.now()}`,
+      type: type,
+      position: {
+        x: Math.random() * 400 + 100,
+        y: Math.random() * 300 + 100
+      },
+      data: {
+        id: `${type}-${Date.now()}`,
+        type: type,
+        label: nodeName,
+        description: '',
+        category: type,
+        status: 'not-started',
+        progress: 0,
+        _onDoubleClick: onNodeDoubleClick
+      }
+    };
+
+    setNodes((nds) => [...nds, newNode]);
+    setHasChanges(true);
+  }, [onNodeDoubleClick]);
+
   const handleSave = () => {
     // Convert back to storage format
     const workflowNodes = nodes.map((node) => {
@@ -113,6 +141,9 @@ export function WorkflowEditor({
         onConnect={handleConnect}
         onNodeDoubleClick={onNodeDoubleClick}
       />
+
+      {/* Node Palette */}
+      <NodePalette onAddNode={handleAddNode} />
 
       {/* Floating Save Button */}
       {hasChanges && (
