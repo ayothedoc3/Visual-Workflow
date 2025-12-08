@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Home, Workflow, Library } from 'lucide-react';
+import { Home, Workflow, Library, FolderKanban } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 export function Navbar() {
@@ -34,6 +34,18 @@ export function Navbar() {
               >
                 <Home className="w-4 h-4" />
                 <span className="text-sm font-medium">Home</span>
+              </Link>
+
+              <Link
+                href="/campaigns"
+                className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                  isActive('/campaigns') || isActive('/playbooks') || isActive('/executions')
+                    ? 'bg-purple-100 text-purple-700'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <FolderKanban className="w-4 h-4" />
+                <span className="text-sm font-medium">Campaigns</span>
               </Link>
 
               <Link

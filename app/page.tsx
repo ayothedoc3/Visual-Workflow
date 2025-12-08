@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Workflow, Library, FileText } from "lucide-react";
+import { Workflow, Library, FolderKanban } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -17,6 +17,14 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <Link href="/campaigns" className="block">
+            <div className="p-6 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:shadow-lg transition-all cursor-pointer">
+              <FolderKanban className="w-12 h-12 text-purple-500 mb-4" />
+              <h2 className="text-xl font-semibold mb-2">Campaigns</h2>
+              <p className="text-gray-600">3-layer strategic execution system with campaigns, playbooks, and tasks</p>
+            </div>
+          </Link>
+
           <Link href="/workflows" className="block">
             <div className="p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all cursor-pointer">
               <Workflow className="w-12 h-12 text-blue-500 mb-4" />
@@ -32,22 +40,16 @@ export default function Home() {
               <p className="text-gray-600">Manage your template library</p>
             </div>
           </Link>
-
-          <div className="p-6 border-2 border-gray-200 rounded-lg opacity-50">
-            <FileText className="w-12 h-12 text-purple-500 mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Documentation</h2>
-            <p className="text-gray-600">Learn how to use the workflow builder</p>
-          </div>
         </div>
 
         <div className="mt-8 flex gap-4">
-          <Link href="/templates">
-            <Button size="lg" className="text-lg px-8 py-6" variant="outline">
-              Templates →
+          <Link href="/campaigns">
+            <Button size="lg" className="text-lg px-8 py-6 bg-purple-600 hover:bg-purple-700">
+              Campaigns →
             </Button>
           </Link>
           <Link href="/workflows">
-            <Button size="lg" className="text-lg px-8 py-6">
+            <Button size="lg" className="text-lg px-8 py-6" variant="outline">
               Workflows →
             </Button>
           </Link>
