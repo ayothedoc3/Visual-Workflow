@@ -43,20 +43,28 @@ const defaultEdgeOptions = {
 };
 
 interface WorkflowCanvasProps {
+  nodes?: Node[];
+  edges?: Edge[];
   initialNodes?: Node[];
   initialEdges?: Edge[];
-  onNodesChange?: (nodes: Node[]) => void;
-  onEdgesChange?: (edges: Edge[]) => void;
+  onNodesChange?: OnNodesChange | ((nodes: Node[]) => void);
+  onEdgesChange?: OnEdgesChange | ((edges: Edge[]) => void);
+  onConnect?: OnConnect;
+  onNodeDoubleClick?: (nodeId: string, nodeData: any) => void;
 }
 
 export function WorkflowCanvas({
+  nodes: externalNodes,
+  edges: externalEdges,
   initialNodes = [],
   initialEdges = [],
   onNodesChange: onNodesChangeExternal,
   onEdgesChange: onEdgesChangeExternal,
+  onConnect: onConnectExternal,
+  onNodeDoubleClick,
 }: WorkflowCanvasProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(externalNodes || initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(externalEdges || initialEdges);
 
   // Notify parent when nodes change
   useEffect(() => {
@@ -74,9 +82,22 @@ export function WorkflowCanvas({
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
-      setEdges((eds) => addEdge(connection, eds));
+      if (onConnectExternal) {
+        onConnectExternal(connection);
+      } else {
+        setEdges((eds) => addEdge(connection, eds));
+      }
     },
-    [setEdges]
+    [setEdges, onConnectExternal]
+  );
+
+  const onNodeDoubleClickHandler = useCallback(
+    (_event: React.MouseEvent, node: Node) => {
+      if (onNodeDoubleClick) {
+        onNodeDoubleClick(node.id, node.data);
+      }
+    },
+    [onNodeDoubleClick]
   );
 
   const onDragOver = useCallback((event: React.DragEvent) => {
@@ -120,6 +141,7 @@ export function WorkflowCanvas({
         onConnect={onConnect}
         onDragOver={onDragOver}
         onDrop={onDrop}
+        onNodeDoubleClick={onNodeDoubleClickHandler}
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         fitView
