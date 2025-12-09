@@ -63,18 +63,47 @@ export function WorkflowCanvas({
   onConnect: onConnectExternal,
   onNodeDoubleClick,
 }: WorkflowCanvasProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState(externalNodes || initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(externalEdges || initialEdges);
+  // When controlled (external props provided), use them directly
+  // When uncontrolled, use internal state
+  const isControlled = externalNodes !== undefined && externalEdges !== undefined;
+
+  const [internalNodes, setInternalNodes, onInternalNodesChange] = useNodesState(initialNodes);
+  const [internalEdges, setInternalEdges, onInternalEdgesChange] = useEdgesState(initialEdges);
+
+  const nodes = isControlled ? externalNodes : internalNodes;
+  const edges = isControlled ? externalEdges : internalEdges;
+
+  const onNodesChange: OnNodesChange = useCallback(
+    (changes) => {
+      if (onNodesChangeExternal) {
+        onNodesChangeExternal(changes);
+      } else {
+        onInternalNodesChange(changes);
+      }
+    },
+    [onNodesChangeExternal, onInternalNodesChange]
+  );
+
+  const onEdgesChange: OnEdgesChange = useCallback(
+    (changes) => {
+      if (onEdgesChangeExternal) {
+        onEdgesChangeExternal(changes);
+      } else {
+        onInternalEdgesChange(changes);
+      }
+    },
+    [onEdgesChangeExternal, onInternalEdgesChange]
+  );
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
       if (onConnectExternal) {
         onConnectExternal(connection);
       } else {
-        setEdges((eds) => addEdge(connection, eds));
+        setInternalEdges((eds) => addEdge(connection, eds));
       }
     },
-    [setEdges, onConnectExternal]
+    [setInternalEdges, onConnectExternal]
   );
 
   const onNodeDoubleClickHandler = useCallback(
@@ -124,9 +153,16 @@ export function WorkflowCanvas({
         },
       };
 
-      setNodes((nds) => nds.concat(newNode));
+      if (isControlled) {
+        // In controlled mode, we can't directly modify - parent must handle
+        // For now, just add to internal state as a fallback
+        console.warn('Drop in controlled mode not fully supported');
+        setInternalNodes((nds) => nds.concat(newNode));
+      } else {
+        setInternalNodes((nds) => nds.concat(newNode));
+      }
     },
-    [setNodes, onNodeDoubleClick]
+    [setInternalNodes, onNodeDoubleClick, isControlled]
   );
 
 
