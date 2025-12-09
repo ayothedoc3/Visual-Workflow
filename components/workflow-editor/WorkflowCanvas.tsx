@@ -112,24 +112,24 @@ export function WorkflowCanvas({
       const type = event.dataTransfer.getData('application/reactflow');
       if (!type) return;
 
-      // Prompt for node name
-      const nodeName = prompt(`Enter ${type} name:`);
-      if (!nodeName) return;
-
       const reactFlowBounds = event.currentTarget.getBoundingClientRect();
       const position = {
         x: event.clientX - reactFlowBounds.left - 100,
         y: event.clientY - reactFlowBounds.top - 50,
       };
 
+      // Create node with default name based on type
+      const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+      const nodeId = `${type}-${Date.now()}`;
+
       const newNode: Node = {
-        id: `${type}-${Date.now()}`,
+        id: nodeId,
         type,
         position,
         data: {
-          id: `${type}-${Date.now()}`,
+          id: nodeId,
           type: type,
-          label: nodeName,
+          label: `New ${typeLabel}`,
           description: '',
           category: type,
           status: 'not-started',
