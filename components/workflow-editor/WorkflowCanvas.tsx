@@ -66,34 +66,6 @@ export function WorkflowCanvas({
   const [nodes, setNodes, onNodesChange] = useNodesState(externalNodes || initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(externalEdges || initialEdges);
 
-  // Sync external nodes with internal state
-  useEffect(() => {
-    if (externalNodes) {
-      setNodes(externalNodes);
-    }
-  }, [externalNodes, setNodes]);
-
-  // Sync external edges with internal state
-  useEffect(() => {
-    if (externalEdges) {
-      setEdges(externalEdges);
-    }
-  }, [externalEdges, setEdges]);
-
-  // Notify parent when nodes change
-  useEffect(() => {
-    if (onNodesChangeExternal) {
-      onNodesChangeExternal(nodes);
-    }
-  }, [nodes, onNodesChangeExternal]);
-
-  // Notify parent when edges change
-  useEffect(() => {
-    if (onEdgesChangeExternal) {
-      onEdgesChangeExternal(edges);
-    }
-  }, [edges, onEdgesChangeExternal]);
-
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
       if (onConnectExternal) {
