@@ -27,7 +27,8 @@ export function WorkflowEditor({
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    // Convert workflow nodes to ReactFlow format
+    // Only load initial data once when workflowId changes
+    // Don't reload when initialNodes/initialEdges change (to preserve current state)
     const flowNodes: Node[] = initialNodes.map((node) => ({
       id: node.id,
       type: node.type, // issue, action, resource, deliverable
@@ -44,7 +45,7 @@ export function WorkflowEditor({
 
     setNodes(flowNodes);
     setEdges(flowEdges);
-  }, [initialNodes, initialEdges, onNodeDoubleClick]);
+  }, [workflowId]); // Only depend on workflowId, not initialNodes/initialEdges
 
   const handleNodesChange = useCallback((changes: any) => {
     setNodes((nds) => {
