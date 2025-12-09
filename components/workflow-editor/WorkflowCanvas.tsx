@@ -35,7 +35,7 @@ const nodeTypes = {
 const defaultEdgeOptions = {
   animated: true,
   type: 'smoothstep' as const,
-  style: { stroke: '#94A3B8', strokeWidth: 3 },
+  style: { stroke: '#94A3B8', strokeWidth: 2 },
   markerEnd: {
     type: MarkerType.ArrowClosed,
     color: '#94A3B8',
@@ -159,14 +159,16 @@ export function WorkflowCanvas({
         defaultEdgeOptions={defaultEdgeOptions}
         fitView
         snapToGrid={true}
-        snapGrid={[15, 15]}
-        connectionLineStyle={{ stroke: '#94A3B8', strokeWidth: 3 }}
+        snapGrid={[20, 20]}
+        connectionLineStyle={{ stroke: '#3B82F6', strokeWidth: 2 }}
         connectionLineType={ConnectionLineType.SmoothStep}
-        deleteKeyCode="Delete"
-        selectNodesOnDrag={true}
+        deleteKeyCode={["Delete", "Backspace"]}
+        multiSelectionKeyCode="Control"
+        selectNodesOnDrag={false}
         panOnDrag={[1, 2]}
         zoomOnScroll={true}
         zoomOnPinch={true}
+        elevateEdgesOnSelect={true}
         className="bg-gray-50"
       >
         <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#E5E7EB" />

@@ -40,9 +40,9 @@ export function NodePalette() {
   };
 
   return (
-    <div className="absolute top-4 left-4 z-10 bg-white rounded-lg shadow-lg border border-gray-200 p-4 w-64">
-      <h3 className="text-sm font-semibold text-gray-700 mb-3">Drag Nodes to Canvas</h3>
-      <div className="space-y-2">
+    <div className="absolute top-4 left-4 z-10 bg-white rounded-xl shadow-xl border-2 border-gray-300 p-3 w-48">
+      <h3 className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wide">Add Node</h3>
+      <div className="grid grid-cols-2 gap-2">
         {nodeTypes.map((nodeType) => {
           const Icon = nodeType.icon;
           return (
@@ -50,28 +50,19 @@ export function NodePalette() {
               key={nodeType.type}
               draggable
               onDragStart={(e) => onDragStart(e, nodeType.type)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-md border-2 transition-all cursor-grab active:cursor-grabbing ${nodeType.color}`}
+              className={`flex flex-col items-center justify-center gap-1 p-3 rounded-lg border-2 transition-all cursor-grab active:cursor-grabbing hover:scale-105 ${nodeType.color}`}
               title={`Drag to add ${nodeType.label}`}
             >
-              <Icon className="w-5 h-5 flex-shrink-0" />
-              <div className="text-left">
-                <div className="font-medium text-sm">{nodeType.label}</div>
-                <div className="text-xs opacity-75">{nodeType.description}</div>
-              </div>
+              <Icon className="w-6 h-6 flex-shrink-0" />
+              <span className="text-xs font-semibold">{nodeType.label}</span>
             </div>
           );
         })}
       </div>
-      <div className="mt-4 pt-4 border-t border-gray-200">
-        <p className="text-xs text-gray-500 mb-2">
-          <strong>How to use:</strong>
+      <div className="mt-3 pt-3 border-t border-gray-200">
+        <p className="text-[10px] text-gray-400 text-center">
+          Drag to canvas • Select & Delete to remove
         </p>
-        <ul className="text-xs text-gray-500 space-y-1 list-disc list-inside">
-          <li>Drag node to canvas</li>
-          <li>Drag nodes to reposition</li>
-          <li>Drag from edge to connect</li>
-          <li>Double-click Action to execute</li>
-        </ul>
       </div>
     </div>
   );
