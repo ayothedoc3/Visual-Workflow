@@ -97,13 +97,16 @@ export function WorkflowCanvas({
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
+      console.log('WorkflowCanvas onConnect called:', connection, 'isControlled:', isControlled);
       if (onConnectExternal) {
+        console.log('Calling onConnectExternal');
         onConnectExternal(connection);
       } else {
+        console.log('Using internal state');
         setInternalEdges((eds) => addEdge(connection, eds));
       }
     },
-    [setInternalEdges, onConnectExternal]
+    [setInternalEdges, onConnectExternal, isControlled]
   );
 
   const onNodeDoubleClickHandler = useCallback(

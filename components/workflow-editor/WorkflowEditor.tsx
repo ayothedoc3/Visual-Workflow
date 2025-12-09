@@ -64,9 +64,12 @@ export function WorkflowEditor({
   }, []);
 
   const handleConnect = useCallback((connection: any) => {
+    console.log('handleConnect called with:', connection);
     setEdges((eds) => {
       const { addEdge } = require('reactflow');
-      return addEdge(connection, eds);
+      const newEdges = addEdge(connection, eds);
+      console.log('New edges after addEdge:', newEdges);
+      return newEdges;
     });
     setHasChanges(true);
   }, []);
