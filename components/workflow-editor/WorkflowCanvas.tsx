@@ -47,8 +47,8 @@ interface WorkflowCanvasProps {
   edges?: Edge[];
   initialNodes?: Node[];
   initialEdges?: Edge[];
-  onNodesChange?: (nodes: Node[]) => void;
-  onEdgesChange?: (edges: Edge[]) => void;
+  onNodesChange?: OnNodesChange;
+  onEdgesChange?: OnEdgesChange;
   onConnect?: OnConnect;
   onNodeDoubleClick?: (nodeId: string, nodeData: any) => void;
 }
