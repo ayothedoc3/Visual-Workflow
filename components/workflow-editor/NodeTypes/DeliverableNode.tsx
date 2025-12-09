@@ -36,7 +36,11 @@ export const DeliverableNode = memo(({ data, id }: NodeProps) => {
   return (
     <>
       <div className="px-4 py-3 shadow-lg rounded-lg border-2 border-purple-500 bg-white min-w-[200px] max-w-[250px]">
+        {/* Connection handles on all sides */}
         <Handle type="target" position={Position.Top} className="!bg-purple-500" />
+        <Handle type="target" position={Position.Left} className="!bg-purple-500" />
+        <Handle type="source" position={Position.Right} className="!bg-purple-500" />
+        <Handle type="source" position={Position.Bottom} className="!bg-purple-500" />
 
         <div className="flex items-center gap-2 mb-2">
           <CheckCircle className="w-5 h-5 text-purple-500 flex-shrink-0" />
@@ -67,8 +71,6 @@ export const DeliverableNode = memo(({ data, id }: NodeProps) => {
             Select Template
           </Button>
         )}
-
-        <Handle type="source" position={Position.Bottom} className="!bg-purple-500" />
       </div>
 
       {showDropdown && (
