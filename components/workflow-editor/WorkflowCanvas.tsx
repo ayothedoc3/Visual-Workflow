@@ -112,22 +112,35 @@ export function WorkflowCanvas({
       const type = event.dataTransfer.getData('application/reactflow');
       if (!type) return;
 
+      // Prompt for node name
+      const nodeName = prompt(`Enter ${type} name:`);
+      if (!nodeName) return;
+
       const reactFlowBounds = event.currentTarget.getBoundingClientRect();
       const position = {
-        x: event.clientX - reactFlowBounds.left,
-        y: event.clientY - reactFlowBounds.top,
+        x: event.clientX - reactFlowBounds.left - 100,
+        y: event.clientY - reactFlowBounds.top - 50,
       };
 
       const newNode: Node = {
         id: `${type}-${Date.now()}`,
         type,
         position,
-        data: { label: `${type} node` },
+        data: {
+          id: `${type}-${Date.now()}`,
+          type: type,
+          label: nodeName,
+          description: '',
+          category: type,
+          status: 'not-started',
+          progress: 0,
+          _onDoubleClick: onNodeDoubleClick
+        },
       };
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [setNodes]
+    [setNodes, onNodeDoubleClick]
   );
 
 

@@ -2,11 +2,7 @@
 
 import { AlertCircle, Play, FileText, CheckCircle } from 'lucide-react';
 
-interface NodePaletteProps {
-  onAddNode: (type: 'issue' | 'action' | 'resource' | 'deliverable') => void;
-}
-
-export function NodePalette({ onAddNode }: NodePaletteProps) {
+export function NodePalette() {
   const nodeTypes = [
     {
       type: 'issue' as const,
@@ -20,7 +16,7 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
       label: 'Action',
       icon: Play,
       color: 'bg-blue-100 border-blue-300 hover:bg-blue-200 text-blue-700',
-      description: 'Executable task (double-click to create execution)'
+      description: 'Executable task'
     },
     {
       type: 'resource' as const,
@@ -38,25 +34,31 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
     }
   ];
 
+  const onDragStart = (event: React.DragEvent, nodeType: string) => {
+    event.dataTransfer.setData('application/reactflow', nodeType);
+    event.dataTransfer.effectAllowed = 'move';
+  };
+
   return (
-    <div className="absolute top-4 left-4 z-10 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
-      <h3 className="text-sm font-semibold text-gray-700 mb-3">Add Nodes</h3>
+    <div className="absolute top-4 left-4 z-10 bg-white rounded-lg shadow-lg border border-gray-200 p-4 w-64">
+      <h3 className="text-sm font-semibold text-gray-700 mb-3">Drag Nodes to Canvas</h3>
       <div className="space-y-2">
         {nodeTypes.map((nodeType) => {
           const Icon = nodeType.icon;
           return (
-            <button
+            <div
               key={nodeType.type}
-              onClick={() => onAddNode(nodeType.type)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-md border-2 transition-all cursor-pointer ${nodeType.color}`}
-              title={nodeType.description}
+              draggable
+              onDragStart={(e) => onDragStart(e, nodeType.type)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-md border-2 transition-all cursor-grab active:cursor-grabbing ${nodeType.color}`}
+              title={`Drag to add ${nodeType.label}`}
             >
               <Icon className="w-5 h-5 flex-shrink-0" />
               <div className="text-left">
                 <div className="font-medium text-sm">{nodeType.label}</div>
                 <div className="text-xs opacity-75">{nodeType.description}</div>
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
@@ -65,7 +67,7 @@ export function NodePalette({ onAddNode }: NodePaletteProps) {
           <strong>How to use:</strong>
         </p>
         <ul className="text-xs text-gray-500 space-y-1 list-disc list-inside">
-          <li>Click button → Enter name</li>
+          <li>Drag node to canvas</li>
           <li>Drag nodes to reposition</li>
           <li>Drag from edge to connect</li>
           <li>Double-click Action to execute</li>
