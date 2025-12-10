@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { WorkflowCanvas } from './WorkflowCanvas';
 import { NodePalette } from './NodePalette';
 import { Node, Edge } from 'reactflow';
@@ -9,109 +9,62 @@ import { Save } from 'lucide-react';
 
 interface WorkflowEditorProps {
   workflowId: string;
-  initialNodes: any[];
-  initialEdges: any[];
-  onSave: (nodes: any[], edges: any[]) => void;
+  nodes: Node[];
+  edges: Edge[];
+  onNodesChange: (nodes: Node[]) => void;
+  onEdgesChange: (edges: Edge[]) => void;
+  onSave: () => void;
   onNodeDoubleClick?: (nodeId: string, nodeData: any) => void;
 }
 
 export function WorkflowEditor({
   workflowId,
-  initialNodes,
-  initialEdges,
+  nodes,
+  edges,
+  onNodesChange,
+  onEdgesChange,
   onSave,
   onNodeDoubleClick
 }: WorkflowEditorProps) {
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
-  const [hasChanges, setHasChanges] = useState(false);
-
-  useEffect(() => {
-    // Only load initial data once when workflowId changes
-    // Don't reload when initialNodes/initialEdges change (to preserve current state)
-    const flowNodes: Node[] = initialNodes.map((node) => ({
-      id: node.id,
-      type: node.type, // issue, action, resource, deliverable
-      position: node.position,
+  // Add _onDoubleClick to node data
+  const enrichedNodes = useMemo(() =>
+    nodes.map((node) => ({
+      ...node,
       data: {
-        ...node,
+        ...node.data,
         _onDoubleClick: onNodeDoubleClick
       }
-    }));
-
-    const flowEdges: Edge[] = initialEdges.map((edge) => ({
-      ...edge
-    }));
-
-    setNodes(flowNodes);
-    setEdges(flowEdges);
-  }, [workflowId]); // Only depend on workflowId, not initialNodes/initialEdges
+    })),
+    [nodes, onNodeDoubleClick]
+  );
 
   const handleNodesChange = useCallback((changes: any) => {
-    setNodes((nds) => {
-      // Apply changes using react-flow's helper
-      const { applyNodeChanges } = require('reactflow');
-      return applyNodeChanges(changes, nds);
-    });
-    setHasChanges(true);
-  }, []);
+    const { applyNodeChanges } = require('reactflow');
+    onNodesChange(applyNodeChanges(changes, nodes));
+  }, [nodes, onNodesChange]);
 
   const handleEdgesChange = useCallback((changes: any) => {
-    setEdges((eds) => {
-      const { applyEdgeChanges } = require('reactflow');
-      return applyEdgeChanges(changes, eds);
-    });
-    setHasChanges(true);
-  }, []);
+    const { applyEdgeChanges } = require('reactflow');
+    onEdgesChange(applyEdgeChanges(changes, edges));
+  }, [edges, onEdgesChange]);
 
   const handleConnect = useCallback((connection: any) => {
     console.log('handleConnect called with:', connection);
-    setEdges((eds) => {
-      const { addEdge } = require('reactflow');
-      const newEdges = addEdge(connection, eds);
-      console.log('New edges after addEdge:', newEdges);
-      return newEdges;
-    });
-    setHasChanges(true);
-  }, []);
+    const { addEdge } = require('reactflow');
+    const newEdges = addEdge(connection, edges);
+    console.log('New edges after addEdge:', newEdges);
+    onEdgesChange(newEdges);
+  }, [edges, onEdgesChange]);
 
-  const handleSave = () => {
-    // Convert back to storage format
-    const workflowNodes = nodes.map((node) => {
-      const { _onDoubleClick, ...data } = node.data;
-      return {
-        id: node.id,
-        type: node.data.type,
-        label: node.data.label,
-        description: node.data.description,
-        category: node.data.category,
-        position: node.position,
-        linkedExecutionId: node.data.linkedExecutionId,
-        status: node.data.status || 'not-started',
-        progress: node.data.progress || 0,
-        primaryAssignee: node.data.primaryAssignee,
-        templateId: node.data.templateId,
-        data: node.data.data
-      };
-    });
-
-    const workflowEdges = edges.map((edge) => ({
-      id: edge.id,
-      source: edge.source,
-      target: edge.target,
-      type: edge.type,
-      animated: edge.animated,
-      label: edge.label
-    }));
-
-    onSave(workflowNodes, workflowEdges);
-    setHasChanges(false);
-  };
+  // Detect if there are unsaved changes by comparing with a snapshot
+  // For simplicity, we'll just show save button when user makes changes
+  // (In a real app, you'd compare current state with last saved state)
+  const hasChanges = nodes.length > 0 || edges.length > 0;
 
   return (
     <div className="h-[calc(100vh-300px)] relative">
       <WorkflowCanvas
-        nodes={nodes}
+        nodes={enrichedNodes}
         edges={edges}
         onNodesChange={handleNodesChange}
         onEdgesChange={handleEdgesChange}
@@ -122,11 +75,11 @@ export function WorkflowEditor({
       {/* Node Palette */}
       <NodePalette />
 
-      {/* Floating Save Button */}
+      {/* Floating Save Button - always show when there are nodes */}
       {hasChanges && (
         <div className="absolute top-4 right-4 z-10">
           <Button
-            onClick={handleSave}
+            onClick={onSave}
             size="sm"
             className="bg-purple-600 hover:bg-purple-700 shadow-lg"
           >

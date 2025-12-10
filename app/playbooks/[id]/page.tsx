@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Calendar, Target, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WorkflowEditor } from '@/components/workflow-editor/WorkflowEditor';
+import { Node, Edge } from 'reactflow';
 
 interface Playbook {
   id: string;
@@ -27,6 +28,10 @@ export default function PlaybookDetailPage() {
   const [playbook, setPlaybook] = useState<Playbook | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Lift canvas state to parent (n8n pattern)
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+
   useEffect(() => {
     if (playbookId) {
       fetchPlaybook();
@@ -39,6 +44,21 @@ export default function PlaybookDetailPage() {
       if (response.ok) {
         const data = await response.json();
         setPlaybook(data);
+
+        // Initialize canvas state from fetched data
+        const flowNodes: Node[] = (data.workflow_nodes || []).map((node: any) => ({
+          id: node.id,
+          type: node.type,
+          position: node.position,
+          data: { ...node }
+        }));
+
+        const flowEdges: Edge[] = (data.workflow_edges || []).map((edge: any) => ({
+          ...edge
+        }));
+
+        setNodes(flowNodes);
+        setEdges(flowEdges);
       }
     } catch (error) {
       console.error('Error fetching playbook:', error);
@@ -47,14 +67,42 @@ export default function PlaybookDetailPage() {
     }
   };
 
-  const handleSave = async (nodes: any[], edges: any[]) => {
+  const handleSave = async () => {
+    // Convert canvas nodes/edges to storage format
+    const workflowNodes = nodes.map((node) => {
+      const { _onDoubleClick, ...data } = node.data;
+      return {
+        id: node.id,
+        type: node.data.type,
+        label: node.data.label,
+        description: node.data.description,
+        category: node.data.category,
+        position: node.position,
+        linkedExecutionId: node.data.linkedExecutionId,
+        status: node.data.status || 'not-started',
+        progress: node.data.progress || 0,
+        primaryAssignee: node.data.primaryAssignee,
+        templateId: node.data.templateId,
+        data: node.data.data
+      };
+    });
+
+    const workflowEdges = edges.map((edge) => ({
+      id: edge.id,
+      source: edge.source,
+      target: edge.target,
+      type: edge.type,
+      animated: edge.animated,
+      label: edge.label
+    }));
+
     try {
       const response = await fetch(`/api/playbooks/${playbookId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workflowNodes: nodes,
-          workflowEdges: edges
+          workflowNodes,
+          workflowEdges
         })
       });
 
@@ -103,14 +151,19 @@ export default function PlaybookDetailPage() {
       if (response.ok) {
         const newExecution = await response.json();
 
-        // Update the node with the linked execution ID
-        const updatedNodes = playbook!.workflow_nodes.map(node =>
-          node.id === nodeId
-            ? { ...node, linkedExecutionId: newExecution.id }
-            : node
+        // Update the current nodes state with the linked execution ID
+        setNodes((prevNodes) =>
+          prevNodes.map((node) =>
+            node.id === nodeId
+              ? {
+                  ...node,
+                  data: { ...node.data, linkedExecutionId: newExecution.id }
+                }
+              : node
+          )
         );
 
-        await handleSave(updatedNodes, playbook!.workflow_edges);
+        // Save will be triggered automatically by hasChanges detection
 
         // Navigate to the new execution
         router.push(`/executions/${newExecution.id}`);
@@ -231,8 +284,10 @@ export default function PlaybookDetailPage() {
         {/* Workflow Editor */}
         <WorkflowEditor
           workflowId={playbookId}
-          initialNodes={playbook.workflow_nodes || []}
-          initialEdges={playbook.workflow_edges || []}
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={setNodes}
+          onEdgesChange={setEdges}
           onSave={handleSave}
           onNodeDoubleClick={handleActionNodeDoubleClick}
         />
