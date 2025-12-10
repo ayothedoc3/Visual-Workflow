@@ -40,21 +40,31 @@ export function WorkflowEditor({
 
   const handleNodesChange = useCallback((changes: any) => {
     const { applyNodeChanges } = require('reactflow');
-    onNodesChange(applyNodeChanges(changes, nodes));
+    const updatedNodes = applyNodeChanges(changes, nodes);
+    console.log('WorkflowEditor handleNodesChange:', changes, 'result:', updatedNodes);
+    onNodesChange(updatedNodes);
   }, [nodes, onNodesChange]);
 
   const handleEdgesChange = useCallback((changes: any) => {
     const { applyEdgeChanges } = require('reactflow');
-    onEdgesChange(applyEdgeChanges(changes, edges));
+    const updatedEdges = applyEdgeChanges(changes, edges);
+    console.log('WorkflowEditor handleEdgesChange:', changes, 'result:', updatedEdges);
+    onEdgesChange(updatedEdges);
   }, [edges, onEdgesChange]);
 
   const handleConnect = useCallback((connection: any) => {
-    console.log('handleConnect called with:', connection);
+    console.log('WorkflowEditor handleConnect called with:', connection);
     const { addEdge } = require('reactflow');
     const newEdges = addEdge(connection, edges);
     console.log('New edges after addEdge:', newEdges);
     onEdgesChange(newEdges);
   }, [edges, onEdgesChange]);
+
+  // Handler for adding nodes directly (from drag-and-drop)
+  const handleAddNode = useCallback((newNode: Node) => {
+    console.log('WorkflowEditor handleAddNode:', newNode);
+    onNodesChange([...nodes, newNode]);
+  }, [nodes, onNodesChange]);
 
   // Detect if there are unsaved changes by comparing with a snapshot
   // For simplicity, we'll just show save button when user makes changes
@@ -69,6 +79,7 @@ export function WorkflowEditor({
         onNodesChange={handleNodesChange}
         onEdgesChange={handleEdgesChange}
         onConnect={handleConnect}
+        onAddNode={handleAddNode}
         onNodeDoubleClick={onNodeDoubleClick}
       />
 

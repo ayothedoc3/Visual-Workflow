@@ -51,6 +51,7 @@ interface WorkflowCanvasProps {
   onNodesChange?: OnNodesChange;
   onEdgesChange?: OnEdgesChange;
   onConnect?: OnConnect;
+  onAddNode?: (node: Node) => void;
   onNodeDoubleClick?: (nodeId: string, nodeData: any) => void;
 }
 
@@ -62,6 +63,7 @@ export function WorkflowCanvas({
   onNodesChange: onNodesChangeExternal,
   onEdgesChange: onEdgesChangeExternal,
   onConnect: onConnectExternal,
+  onAddNode,
   onNodeDoubleClick,
 }: WorkflowCanvasProps) {
   // When controlled (external props provided), use them directly
@@ -170,18 +172,15 @@ export function WorkflowCanvas({
         },
       };
 
-      if (isControlled) {
-        // In controlled mode, parent manages state - call setNodes directly
-        const currentNodes = externalNodes || [];
-        const updatedNodes = [...currentNodes, newNode];
-        // onNodesChangeExternal expects a nodes array (not changes)
-        // since we passed setNodes from parent
-        (onNodesChangeExternal as any)(updatedNodes);
+      if (isControlled && onAddNode) {
+        // In controlled mode, use the dedicated onAddNode callback
+        console.log('Calling onAddNode with:', newNode);
+        onAddNode(newNode);
       } else {
         setInternalNodes((nds) => nds.concat(newNode));
       }
     },
-    [setInternalNodes, onNodeDoubleClick, isControlled, externalNodes, onNodesChangeExternal]
+    [setInternalNodes, onNodeDoubleClick, isControlled, onAddNode]
   );
 
 
