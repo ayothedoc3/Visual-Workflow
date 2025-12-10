@@ -13,6 +13,7 @@ import ReactFlow, {
   addEdge,
   useNodesState,
   useEdgesState,
+  useReactFlow,
   Connection,
   BackgroundVariant,
   MarkerType,
@@ -69,6 +70,8 @@ export function WorkflowCanvas({
 
   const [internalNodes, setInternalNodes, onInternalNodesChange] = useNodesState(initialNodes);
   const [internalEdges, setInternalEdges, onInternalEdgesChange] = useEdgesState(initialEdges);
+
+  const { screenToFlowPosition } = useReactFlow();
 
   const nodes = isControlled ? externalNodes : internalNodes;
   const edges = isControlled ? externalEdges : internalEdges;
@@ -130,11 +133,11 @@ export function WorkflowCanvas({
       const type = event.dataTransfer.getData('application/reactflow');
       if (!type) return;
 
-      const reactFlowBounds = event.currentTarget.getBoundingClientRect();
-      const position = {
-        x: event.clientX - reactFlowBounds.left - 100,
-        y: event.clientY - reactFlowBounds.top - 50,
-      };
+      // Use React Flow's screen-to-flow position converter
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
 
       // Create node with default name based on type
       const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
@@ -157,15 +160,17 @@ export function WorkflowCanvas({
       };
 
       if (isControlled) {
-        // In controlled mode, we can't directly modify - parent must handle
-        // For now, just add to internal state as a fallback
-        console.warn('Drop in controlled mode not fully supported');
-        setInternalNodes((nds) => nds.concat(newNode));
+        // In controlled mode, parent manages state - call setNodes directly
+        const currentNodes = externalNodes || [];
+        const updatedNodes = [...currentNodes, newNode];
+        // onNodesChangeExternal expects a nodes array (not changes)
+        // since we passed setNodes from parent
+        (onNodesChangeExternal as any)(updatedNodes);
       } else {
         setInternalNodes((nds) => nds.concat(newNode));
       }
     },
-    [setInternalNodes, onNodeDoubleClick, isControlled]
+    [setInternalNodes, onNodeDoubleClick, isControlled, externalNodes, onNodesChangeExternal, screenToFlowPosition]
   );
 
 

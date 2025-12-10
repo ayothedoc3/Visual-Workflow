@@ -38,7 +38,8 @@
       "Bash(npx fix-react2shell-next)",
       "Bash(npm update:*)",
       "Bash(npm audit:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(tasklist:*)"
     ],
     "deny": [],
     "ask": []
