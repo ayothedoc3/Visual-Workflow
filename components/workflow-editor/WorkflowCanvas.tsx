@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useMemo, useEffect, useRef } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -13,11 +13,11 @@ import ReactFlow, {
   addEdge,
   useNodesState,
   useEdgesState,
-  useReactFlow,
   Connection,
   BackgroundVariant,
   MarkerType,
   ConnectionLineType,
+  ReactFlowInstance,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
@@ -71,7 +71,7 @@ export function WorkflowCanvas({
   const [internalNodes, setInternalNodes, onInternalNodesChange] = useNodesState(initialNodes);
   const [internalEdges, setInternalEdges, onInternalEdgesChange] = useEdgesState(initialEdges);
 
-  const { screenToFlowPosition } = useReactFlow();
+  const reactFlowInstance = useRef<ReactFlowInstance | null>(null);
 
   const nodes = isControlled ? externalNodes : internalNodes;
   const edges = isControlled ? externalEdges : internalEdges;
@@ -133,11 +133,22 @@ export function WorkflowCanvas({
       const type = event.dataTransfer.getData('application/reactflow');
       if (!type) return;
 
-      // Use React Flow's screen-to-flow position converter
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
+      // Calculate position manually using ReactFlow instance
+      let position = { x: 0, y: 0 };
+
+      if (reactFlowInstance.current) {
+        position = reactFlowInstance.current.screenToFlowPosition({
+          x: event.clientX,
+          y: event.clientY,
+        });
+      } else {
+        // Fallback if instance not ready
+        const reactFlowBounds = event.currentTarget.getBoundingClientRect();
+        position = {
+          x: event.clientX - reactFlowBounds.left - 100,
+          y: event.clientY - reactFlowBounds.top - 50,
+        };
+      }
 
       // Create node with default name based on type
       const typeLabel = type.charAt(0).toUpperCase() + type.slice(1);
@@ -170,9 +181,13 @@ export function WorkflowCanvas({
         setInternalNodes((nds) => nds.concat(newNode));
       }
     },
-    [setInternalNodes, onNodeDoubleClick, isControlled, externalNodes, onNodesChangeExternal, screenToFlowPosition]
+    [setInternalNodes, onNodeDoubleClick, isControlled, externalNodes, onNodesChangeExternal]
   );
 
+
+  const onInit = useCallback((instance: ReactFlowInstance) => {
+    reactFlowInstance.current = instance;
+  }, []);
 
   return (
     <div className="w-full h-full bg-white">
@@ -185,6 +200,7 @@ export function WorkflowCanvas({
         onDragOver={onDragOver}
         onDrop={onDrop}
         onNodeDoubleClick={onNodeDoubleClickHandler}
+        onInit={onInit}
         nodeTypes={nodeTypes}
         defaultEdgeOptions={defaultEdgeOptions}
         fitView
