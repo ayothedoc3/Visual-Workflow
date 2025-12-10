@@ -36,11 +36,8 @@ export const IssueNode = memo(({ data, id }: NodeProps) => {
   return (
     <>
       <div className="px-4 py-3 shadow-lg rounded-lg border-2 border-red-500 bg-white min-w-[200px] max-w-[250px]">
-        {/* Connection handles on all sides */}
-        <Handle type="target" position={Position.Top} className="!bg-red-500" />
-        <Handle type="target" position={Position.Left} className="!bg-red-500" />
-        <Handle type="source" position={Position.Right} className="!bg-red-500" />
-        <Handle type="source" position={Position.Bottom} className="!bg-red-500" />
+        {/* Issue is source node - only output on right side */}
+        <Handle type="source" position={Position.Right} className="!bg-red-500 !w-3 !h-3" />
 
         <div className="flex items-center gap-2 mb-2">
           <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />

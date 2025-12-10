@@ -36,11 +36,9 @@ export const ResourceNode = memo(({ data, id }: NodeProps) => {
   return (
     <>
       <div className="px-4 py-3 shadow-lg rounded-lg border-2 border-green-500 bg-white min-w-[200px] max-w-[250px]">
-        {/* Connection handles on all sides */}
-        <Handle type="target" position={Position.Top} className="!bg-green-500" />
-        <Handle type="target" position={Position.Left} className="!bg-green-500" />
-        <Handle type="source" position={Position.Right} className="!bg-green-500" />
-        <Handle type="source" position={Position.Bottom} className="!bg-green-500" />
+        {/* Resource is middle node - input from left, output to right */}
+        <Handle type="target" position={Position.Left} className="!bg-green-500 !w-3 !h-3" />
+        <Handle type="source" position={Position.Right} className="!bg-green-500 !w-3 !h-3" />
 
         <div className="flex items-center gap-2 mb-2">
           <Wrench className="w-5 h-5 text-green-500 flex-shrink-0" />
