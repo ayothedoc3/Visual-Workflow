@@ -54,7 +54,9 @@ export const StickyNote = memo(({ data, id }: NodeProps) => {
       className="px-4 py-3 shadow-lg rounded-lg border-2 border-gray-300 min-w-[250px] max-w-[300px]"
       style={{ backgroundColor: color }}
     >
-      {/* Sticky notes don't connect to workflow - no handles */}
+      {/* Sticky notes can be connected to show relationships */}
+      <Handle type="target" position={Position.Left} className="!bg-gray-400 !w-3 !h-3" />
+      <Handle type="source" position={Position.Right} className="!bg-gray-400 !w-3 !h-3" />
 
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
