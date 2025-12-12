@@ -2,7 +2,7 @@
 
 import { memo, useState, useRef } from 'react';
 import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
-import { Wrench, Paperclip, X, Eye, Download, FileText, Image as ImageIcon, File } from 'lucide-react';
+import { Wrench, Paperclip, X, Eye, Download, FileText, Image as ImageIcon, File, Laptop } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TemplateDropdown } from '../TemplateDropdown';
 import type { Template } from '@/lib/storage';
@@ -18,6 +18,7 @@ interface FileData {
 export const ResourceNode = memo(({ data, id }: NodeProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [isEditingSoftware, setIsEditingSoftware] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { setNodes } = useReactFlow();
 
@@ -139,6 +140,23 @@ export const ResourceNode = memo(({ data, id }: NodeProps) => {
     return <File className="w-4 h-4" />;
   };
 
+  const handleSoftwareUpdate = (value: string) => {
+    setNodes((nodes) =>
+      nodes.map((node) => {
+        if (node.id === id) {
+          return {
+            ...node,
+            data: {
+              ...node.data,
+              software: value,
+            },
+          };
+        }
+        return node;
+      })
+    );
+  };
+
   return (
     <>
       <div className="px-4 py-3 shadow-lg rounded-lg border-2 border-green-500 bg-white min-w-[200px] max-w-[250px]">
@@ -153,19 +171,65 @@ export const ResourceNode = memo(({ data, id }: NodeProps) => {
 
         {/* Template Section */}
         {data.templateId ? (
-          <div className="mb-3">
+          <div className="mb-3 space-y-2">
             <p className="text-sm font-medium text-gray-900 break-words">{data.label}</p>
             {data.description && (
-              <p className="text-xs text-gray-500 mt-1 break-words">{data.description}</p>
+              <p className="text-xs text-gray-500 break-words">{data.description}</p>
             )}
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowDropdown(true)}
-              className="mt-2 w-full text-xs"
-            >
-              Change Template
-            </Button>
+
+            {/* Software Assignment */}
+            <div className="pt-2 border-t">
+              {isEditingSoftware ? (
+                <>
+                  <label className="flex items-center gap-1 text-xs text-gray-600 mb-1">
+                    <Laptop className="w-3 h-3" />
+                    Software
+                  </label>
+                  <input
+                    type="text"
+                    value={data.software || ''}
+                    onChange={(e) => handleSoftwareUpdate(e.target.value)}
+                    placeholder="Tool or platform..."
+                    className="w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-green-500 mb-1"
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsEditingSoftware(false)}
+                    className="w-full text-xs"
+                  >
+                    Done
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {data.software && (
+                    <div className="flex items-center gap-1 text-xs text-gray-700 mb-1">
+                      <Laptop className="w-3 h-3 text-green-500" />
+                      <span className="truncate">{data.software}</span>
+                    </div>
+                  )}
+                  <div className="flex gap-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setIsEditingSoftware(true)}
+                      className="flex-1 text-xs"
+                    >
+                      {data.software ? 'Edit' : 'Add'} Software
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setShowDropdown(true)}
+                      className="flex-1 text-xs"
+                    >
+                      Change
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         ) : (
           <Button
