@@ -49,6 +49,12 @@ export const ResourceNode = memo(({ data, id }: NodeProps) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    // Check file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size must be less than 10MB');
+      return;
+    }
+
     setUploading(true);
     try {
       const formData = new FormData();
@@ -59,7 +65,10 @@ export const ResourceNode = memo(({ data, id }: NodeProps) => {
         body: formData,
       });
 
-      if (!response.ok) throw new Error('Upload failed');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
 
       const { url } = await response.json();
 
@@ -87,7 +96,8 @@ export const ResourceNode = memo(({ data, id }: NodeProps) => {
       );
     } catch (error) {
       console.error('File upload failed:', error);
-      alert('File upload failed. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'File upload failed. Please try again.';
+      alert(errorMessage);
     } finally {
       setUploading(false);
       if (fileInputRef.current) {
