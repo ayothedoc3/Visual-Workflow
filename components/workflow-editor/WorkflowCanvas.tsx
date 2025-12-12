@@ -25,12 +25,16 @@ import { IssueNode } from './NodeTypes/IssueNode';
 import { ActionNode } from './NodeTypes/ActionNode';
 import { ResourceNode } from './NodeTypes/ResourceNode';
 import { DeliverableNode } from './NodeTypes/DeliverableNode';
+import { StickyNote } from './NodeTypes/StickyNote';
+import { FileAttachment } from './NodeTypes/FileAttachment';
 
 const nodeTypes = {
   issue: IssueNode,
   action: ActionNode,
   resource: ResourceNode,
   deliverable: DeliverableNode,
+  sticky: StickyNote,
+  file: FileAttachment,
 };
 
 const defaultEdgeOptions = {

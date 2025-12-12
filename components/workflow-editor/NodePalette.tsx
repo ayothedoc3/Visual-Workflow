@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, Play, FileText, CheckCircle } from 'lucide-react';
+import { AlertCircle, Play, FileText, CheckCircle, StickyNote, Paperclip } from 'lucide-react';
 
 export function NodePalette() {
   const nodeTypes = [
@@ -31,6 +31,20 @@ export function NodePalette() {
       icon: CheckCircle,
       color: 'bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700',
       description: 'Output or result'
+    },
+    {
+      type: 'sticky' as const,
+      label: 'Note',
+      icon: StickyNote,
+      color: 'bg-yellow-100 border-yellow-300 hover:bg-yellow-200 text-yellow-700',
+      description: 'Sticky note'
+    },
+    {
+      type: 'file' as const,
+      label: 'File',
+      icon: Paperclip,
+      color: 'bg-gray-100 border-gray-300 hover:bg-gray-200 text-gray-700',
+      description: 'File attachment'
     }
   ];
 
