@@ -6,6 +6,7 @@ import { Wrench, Paperclip, X, Eye, Download, FileText, Image as ImageIcon, File
 import { Button } from '@/components/ui/button';
 import { TemplateDropdown } from '../TemplateDropdown';
 import type { Template } from '@/lib/storage';
+import type { TemplateVariant } from '@/lib/templateVariants';
 
 interface FileData {
   name: string;
@@ -24,7 +25,7 @@ export const ResourceNode = memo(({ data, id }: NodeProps) => {
 
   const attachedFile: FileData | null = data.attachedFile || null;
 
-  const handleTemplateSelect = (template: Template) => {
+  const handleTemplateSelect = (template: Template, variant?: TemplateVariant) => {
     setNodes((nodes) =>
       nodes.map((node) => {
         if (node.id === id) {
@@ -37,6 +38,7 @@ export const ResourceNode = memo(({ data, id }: NodeProps) => {
               description: template.description,
               category: template.category,
               tags: template.tags,
+              selectedVariant: variant, // Store selected variant
             },
           };
         }

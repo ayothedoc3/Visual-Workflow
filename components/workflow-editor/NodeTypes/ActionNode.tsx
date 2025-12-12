@@ -1,20 +1,22 @@
 'use client';
 
 import { memo, useState } from 'react';
-import { Handle, Position, NodeProps, useReactFlow } from 'reactflow';
+import { Handle, Position, NodeProps, useReactFlow, Node } from 'reactflow';
 import { Play, User, Laptop } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TemplateDropdown } from '../TemplateDropdown';
 import type { Template } from '@/lib/storage';
+import type { TemplateVariant } from '@/lib/templateVariants';
 
 export const ActionNode = memo(({ data, id }: NodeProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isEditingAssignments, setIsEditingAssignments] = useState(false);
-  const { setNodes } = useReactFlow();
+  const { setNodes, setEdges, getNode } = useReactFlow();
 
-  const handleTemplateSelect = (template: Template) => {
-    setNodes((nodes) =>
-      nodes.map((node) => {
+  const handleTemplateSelect = (template: Template, variant?: TemplateVariant) => {
+    // Update the current node with template data
+    setNodes((nodes) => {
+      const updatedNodes = nodes.map((node) => {
         if (node.id === id) {
           return {
             ...node,
@@ -25,12 +27,109 @@ export const ActionNode = memo(({ data, id }: NodeProps) => {
               description: template.description,
               category: template.category,
               tags: template.tags,
+              selectedVariant: variant,
             },
           };
         }
         return node;
-      })
-    );
+      });
+
+      // If variant is selected, auto-create suggested resources and deliverables
+      if (variant) {
+        const currentNode = getNode(id);
+        if (!currentNode) return updatedNodes;
+
+        const newNodes: Node[] = [];
+        const resourceIds: string[] = [];
+        const deliverableIds: string[] = [];
+        const baseX = currentNode.position.x;
+        const baseY = currentNode.position.y;
+        const horizontalSpacing = 300;
+        const verticalSpacing = 150;
+        const timestamp = Date.now();
+
+        // Create resource nodes to the left
+        variant.suggestedResources.forEach((resource, index) => {
+          const resourceId = `resource-${timestamp}-${index}`;
+          resourceIds.push(resourceId);
+          newNodes.push({
+            id: resourceId,
+            type: 'resource',
+            position: {
+              x: baseX - horizontalSpacing,
+              y: baseY + (index * verticalSpacing),
+            },
+            data: {
+              id: resourceId,
+              type: 'resource',
+              label: resource.templateName,
+              description: resource.description,
+              category: 'auto-generated',
+              software: resource.defaultSoftware || '',
+              status: 'not-started',
+              progress: 0,
+            },
+          });
+        });
+
+        // Create deliverable nodes to the right
+        variant.suggestedDeliverables.forEach((deliverable, index) => {
+          const deliverableId = `deliverable-${timestamp}-${index}`;
+          deliverableIds.push(deliverableId);
+          newNodes.push({
+            id: deliverableId,
+            type: 'deliverable',
+            position: {
+              x: baseX + horizontalSpacing,
+              y: baseY + (index * verticalSpacing),
+            },
+            data: {
+              id: deliverableId,
+              type: 'deliverable',
+              label: deliverable.templateName,
+              description: deliverable.description,
+              category: 'auto-generated',
+              status: 'not-started',
+              progress: 0,
+            },
+          });
+        });
+
+        // Add edges from resources to action and from action to deliverables
+        setEdges((edges) => {
+          const newEdges = [...edges];
+
+          // Connect resources -> action
+          resourceIds.forEach((resourceId) => {
+            newEdges.push({
+              id: `edge-${resourceId}-${id}`,
+              source: resourceId,
+              target: id,
+              type: 'smoothstep',
+              animated: true,
+            });
+          });
+
+          // Connect action -> deliverables
+          deliverableIds.forEach((deliverableId) => {
+            newEdges.push({
+              id: `edge-${id}-${deliverableId}`,
+              source: id,
+              target: deliverableId,
+              type: 'smoothstep',
+              animated: true,
+            });
+          });
+
+          return newEdges;
+        });
+
+        return [...updatedNodes, ...newNodes];
+      }
+
+      return updatedNodes;
+    });
+
     setShowDropdown(false);
   };
 

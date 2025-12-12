@@ -1,16 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Search } from 'lucide-react';
+import { X, Search, ArrowRight, ArrowLeft } from 'lucide-react';
 import type { Template } from '@/lib/storage';
 import type { NodeType } from '@/lib/schema';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { templatesApi } from '@/lib/api-client';
+import { getTemplateVariants, hasVariants, type TemplateVariant } from '@/lib/templateVariants';
 
 interface TemplateDropdownProps {
   nodeType: NodeType;
-  onSelect: (template: Template) => void;
+  onSelect: (template: Template, variant?: TemplateVariant) => void;
   onClose: () => void;
   currentTemplateId?: string;
 }
@@ -26,6 +27,8 @@ export function TemplateDropdown({
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [showVariants, setShowVariants] = useState(false);
 
   useEffect(() => {
     fetchTemplates();
@@ -82,6 +85,26 @@ export function TemplateDropdown({
 
   const categories = ['all', ...new Set(templates.map((t) => t.category))];
 
+  const handleTemplateClick = (template: Template) => {
+    if (hasVariants(template.name)) {
+      setSelectedTemplate(template);
+      setShowVariants(true);
+    } else {
+      onSelect(template);
+    }
+  };
+
+  const handleVariantSelect = (variant: TemplateVariant) => {
+    if (selectedTemplate) {
+      onSelect(selectedTemplate, variant);
+    }
+  };
+
+  const handleBackToTemplates = () => {
+    setShowVariants(false);
+    setSelectedTemplate(null);
+  };
+
   const getNodeTypeColor = () => {
     switch (nodeType) {
       case 'issue':
@@ -97,6 +120,73 @@ export function TemplateDropdown({
     }
   };
 
+  // Show variant selection screen if a template with variants is selected
+  if (showVariants && selectedTemplate) {
+    const variants = getTemplateVariants(selectedTemplate.name);
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 w-full max-w-3xl max-h-[80vh] overflow-y-auto">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-2xl font-semibold">
+                Choose Outcome Path
+              </h2>
+              <p className="text-sm text-gray-600">
+                {selectedTemplate.name} → Select your desired outcome
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Back Button */}
+          <Button
+            variant="outline"
+            onClick={handleBackToTemplates}
+            className="mb-4"
+            size="sm"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Templates
+          </Button>
+
+          {/* Variant List */}
+          <div className="space-y-3">
+            {variants.map((variant) => (
+              <button
+                key={variant.id}
+                onClick={() => handleVariantSelect(variant)}
+                className="w-full text-left p-4 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:shadow-md transition-all"
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <h3 className="font-semibold text-lg">{variant.name}</h3>
+                  <ArrowRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                </div>
+
+                <p className="text-sm text-gray-600 mb-2">{variant.description}</p>
+
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                    Outcome: {variant.outcome}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {variant.suggestedResources.length} resources · {variant.suggestedDeliverables.length} deliverables
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Default template selection screen
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-3xl max-h-[80vh] overflow-y-auto">
@@ -163,7 +253,7 @@ export function TemplateDropdown({
             {filteredTemplates.map((template) => (
               <button
                 key={template.id}
-                onClick={() => onSelect(template)}
+                onClick={() => handleTemplateClick(template)}
                 className={`w-full text-left p-4 rounded-lg border-2 hover:shadow-md transition-all ${
                   template.id === currentTemplateId
                     ? getNodeTypeColor()
