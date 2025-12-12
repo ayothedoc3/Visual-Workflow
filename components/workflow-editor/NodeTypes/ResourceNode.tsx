@@ -66,11 +66,18 @@ export const ResourceNode = memo(({ data, id }: NodeProps) => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Upload failed');
+        let errorMessage = 'Upload failed';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch {
+          errorMessage = `Upload failed with status ${response.status}`;
+        }
+        throw new Error(errorMessage);
       }
 
-      const { url } = await response.json();
+      const result = await response.json();
+      const { url } = result;
 
       const fileData: FileData = {
         name: file.name,
