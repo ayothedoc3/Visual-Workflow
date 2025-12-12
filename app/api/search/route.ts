@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import db from '@/lib/db';
+import { getDb } from '@/lib/db';
 import { campaigns, playbooks, executions } from '@/lib/schema';
 import { like, or, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
+    const db = getDb();
     const searchParams = request.nextUrl.searchParams;
     const query = searchParams.get('q');
 
@@ -44,11 +45,11 @@ export async function GET(request: NextRequest) {
         id: playbooks.id,
         name: playbooks.name,
         description: playbooks.description,
-        campaignId: playbooks.campaign_id,
+        campaignId: playbooks.parentCampaignId,
         campaignName: campaigns.name,
       })
       .from(playbooks)
-      .leftJoin(campaigns, sql`${playbooks.campaign_id} = ${campaigns.id}`)
+      .leftJoin(campaigns, sql`${playbooks.parentCampaignId} = ${campaigns.id}`)
       .where(
         or(
           like(playbooks.name, searchTerm),
@@ -76,11 +77,11 @@ export async function GET(request: NextRequest) {
         id: executions.id,
         name: executions.name,
         status: executions.status,
-        playbookId: executions.parent_playbook_id,
+        playbookId: executions.parentPlaybookId,
         playbookName: playbooks.name,
       })
       .from(executions)
-      .leftJoin(playbooks, sql`${executions.parent_playbook_id} = ${playbooks.id}`)
+      .leftJoin(playbooks, sql`${executions.parentPlaybookId} = ${playbooks.id}`)
       .where(like(executions.name, searchTerm))
       .limit(10);
 
@@ -102,7 +103,7 @@ export async function GET(request: NextRequest) {
       .select({
         playbookId: playbooks.id,
         playbookName: playbooks.name,
-        workflowNodes: playbooks.workflow_nodes,
+        workflowNodes: playbooks.workflowNodes,
       })
       .from(playbooks)
       .limit(100);
