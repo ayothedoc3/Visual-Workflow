@@ -4,6 +4,19 @@ import { put } from '@vercel/blob';
 export async function POST(request: NextRequest) {
   try {
     console.log('[Upload] Receiving file upload request...');
+
+    // Check if Blob storage is configured
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      console.error('[Upload] BLOB_READ_WRITE_TOKEN not configured');
+      return NextResponse.json(
+        {
+          error: 'File storage not configured',
+          details: 'Please set up Vercel Blob storage in your project settings. Go to Vercel Dashboard → Storage → Create Blob Store'
+        },
+        { status: 503 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
 
@@ -36,8 +49,19 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('[Upload] Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    // Check for common Vercel Blob errors
+    let userMessage = 'Failed to upload file';
+    if (errorMessage.includes('token') || errorMessage.includes('auth')) {
+      userMessage = 'Vercel Blob storage not properly configured. Please check your environment variables.';
+    }
+
     return NextResponse.json(
-      { error: 'Failed to upload file', details: error instanceof Error ? error.message : 'Unknown error' },
+      {
+        error: userMessage,
+        details: errorMessage
+      },
       { status: 500 }
     );
   }
