@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, Play, FileText, CheckCircle, StickyNote } from 'lucide-react';
+import { AlertCircle, Play, FileText, CheckCircle, StickyNote, Shield } from 'lucide-react';
 
 export function NodePalette() {
   const nodeTypes = [
@@ -31,6 +31,13 @@ export function NodePalette() {
       icon: CheckCircle,
       color: 'bg-purple-100 border-purple-300 hover:bg-purple-200 text-purple-700',
       description: 'Output or result'
+    },
+    {
+      type: 'gate' as const,
+      label: 'Gate',
+      icon: Shield,
+      color: 'bg-indigo-100 border-indigo-300 hover:bg-indigo-200 text-indigo-700',
+      description: 'EMOS gate checkpoint'
     },
     {
       type: 'sticky' as const,

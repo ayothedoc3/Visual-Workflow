@@ -5,7 +5,7 @@ import { pgTable, uuid, varchar, text, timestamp, jsonb, pgEnum, integer, date }
 // ============================================
 
 // Enum for node types
-export const nodeTypeEnum = pgEnum('node_type', ['issue', 'action', 'resource', 'deliverable']);
+export const nodeTypeEnum = pgEnum('node_type', ['issue', 'action', 'resource', 'deliverable', 'gate']);
 
 // Enum for campaign/playbook status
 export const statusEnum = pgEnum('status', ['not-started', 'on-track', 'in-progress', 'at-risk', 'blocked', 'completed']);
@@ -33,6 +33,22 @@ export const resourceTypeEnum = pgEnum('resource_type', ['tool', 'document', 'pe
 
 // Enum for resource status
 export const resourceStatusEnum = pgEnum('resource_status', ['available', 'requested', 'unavailable']);
+
+// ============================================
+// EMOS (Enterprise Management Operating System) ENUMS
+// ============================================
+
+// Enum for Package Tiers
+export const packageTierEnum = pgEnum('package_tier', ['Bronze', 'Silver', 'Gold', 'Platinum', 'Black']);
+
+// Enum for Levels (ACQUIRE/MAINTAIN/SCALE)
+export const levelEnum = pgEnum('level', ['ACQUIRE', 'MAINTAIN', 'SCALE']);
+
+// Enum for Pillars
+export const pillarEnum = pgEnum('pillar', ['Revenue', 'Technology', 'People', 'Equity']);
+
+// Enum for Talent Tiers
+export const talentTierEnum = pgEnum('talent_tier', ['1', '2', '3']);
 
 // Templates table
 export const templates = pgTable('templates', {
@@ -85,6 +101,11 @@ export const campaigns = pgTable('wf_campaigns', {
   // Overall status and progress
   overallStatus: statusEnum('overall_status').notNull().default('not-started'),
 
+  // EMOS Strategic Metadata
+  packageTier: packageTierEnum('package_tier'),
+  level: levelEnum('level'),
+  pillar: pillarEnum('pillar'),
+
   // Timeline
   startDate: date('start_date'),
   targetDate: date('target_date'),
@@ -116,6 +137,10 @@ export const playbooks = pgTable('wf_playbooks', {
   // Status tracking
   overallStatus: statusEnum('overall_status').notNull().default('not-started'),
   progress: integer('progress').notNull().default(0), // 0-100
+
+  // EMOS Tactical Metadata (inherited from campaign or overridden)
+  packageTier: packageTierEnum('package_tier'),
+  requiredTalentTier: talentTierEnum('required_talent_tier'),
 
   // Metadata
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -215,7 +240,7 @@ export const resources = pgTable('wf_resources', {
 // ============================================
 
 // Node type enum
-export type NodeType = 'issue' | 'action' | 'resource' | 'deliverable';
+export type NodeType = 'issue' | 'action' | 'resource' | 'deliverable' | 'gate';
 
 // Status types
 export type CampaignStatus = 'not-started' | 'on-track' | 'at-risk' | 'blocked' | 'completed';
@@ -227,6 +252,12 @@ export type BlockerType = 'waiting-on-person' | 'missing-resource' | 'external-d
 export type BlockerStatus = 'active' | 'resolved';
 export type ResourceType = 'tool' | 'document' | 'person' | 'budget' | 'other';
 export type ResourceStatus = 'available' | 'requested' | 'unavailable';
+
+// EMOS types
+export type PackageTier = 'Bronze' | 'Silver' | 'Gold' | 'Platinum' | 'Black';
+export type Level = 'ACQUIRE' | 'MAINTAIN' | 'SCALE';
+export type Pillar = 'Revenue' | 'Technology' | 'People' | 'Equity';
+export type TalentTier = '1' | '2' | '3';
 
 // Strategic Node Structure (stored in JSONB)
 export interface StrategicNode {

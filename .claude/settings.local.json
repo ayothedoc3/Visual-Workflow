@@ -39,7 +39,10 @@
       "Bash(npm update:*)",
       "Bash(npm audit:*)",
       "Bash(find:*)",
-      "Bash(tasklist:*)"
+      "Bash(tasklist:*)",
+      "Bash(actions... if you select Discovery Call, it changes the entire rest of the)",
+      "Bash(formula?\"\n\nImplemented:\n- Template Variants: Each action template can have 4-5 predefined outcome paths\n- Two-step selection UI: Choose template → Choose outcome variant\n- Auto-load workflow: Selecting variant auto-creates suggested resources + deliverables\n- Pre-filled assignments: Resources get default software, actions get default assignments\n- Predefined pathways for Discovery Call (5 variants), Client Onboarding (3), Content Creation (3)\n\nTechnical Details:\n- lib/templateVariants.ts: Variant definitions with suggested nodes\n- TemplateDropdown: Two-screen flow (template list → variant selection)\n- ActionNode: Auto-creates connected resource/deliverable nodes based on variant\n- Maintains finite pathways approach (4-5 outcomes per action)\n\nExample Flow:\n1. Drag Action node onto canvas\n2. Click \"Select)",
+      "Bash(Template\"\n3. Choose \"Discovery Call\"\n4. Select variant: \"KPI Analysis Path\"\n5. Auto-creates: Analytics Dashboard + Historical Data (resources) → KPI Report + Metrics Dashboard (deliverables)\n6. All nodes pre-connected with proper edges\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []

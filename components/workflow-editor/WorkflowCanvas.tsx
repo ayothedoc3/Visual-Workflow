@@ -26,6 +26,7 @@ import { ActionNode } from './NodeTypes/ActionNode';
 import { ResourceNode } from './NodeTypes/ResourceNode';
 import { DeliverableNode } from './NodeTypes/DeliverableNode';
 import { StickyNote } from './NodeTypes/StickyNote';
+import { GateNode } from './NodeTypes/GateNode';
 
 const nodeTypes = {
   issue: IssueNode,
@@ -33,6 +34,7 @@ const nodeTypes = {
   resource: ResourceNode,
   deliverable: DeliverableNode,
   sticky: StickyNote,
+  gate: GateNode,
 };
 
 const defaultEdgeOptions = {
@@ -231,6 +233,8 @@ export function WorkflowCanvas({
                 return '#10B981';
               case 'deliverable':
                 return '#8B5CF6';
+              case 'gate':
+                return '#6366F1';
               default:
                 return '#94A3B8';
             }
