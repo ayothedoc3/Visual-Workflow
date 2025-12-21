@@ -2,11 +2,13 @@
 
 import { memo, useState } from 'react';
 import { Handle, Position, NodeProps, useReactFlow, Node } from 'reactflow';
-import { Play, User, Laptop } from 'lucide-react';
+import { Play, User, Laptop, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TemplateDropdown } from '../TemplateDropdown';
 import type { Template } from '@/lib/storage';
 import type { TemplateVariant } from '@/lib/templateVariants';
+import { TALENT_TIERS } from '@/lib/emosSystem';
+import type { TalentTier } from '@/lib/schema';
 
 export const ActionNode = memo(({ data, id }: NodeProps) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -133,7 +135,7 @@ export const ActionNode = memo(({ data, id }: NodeProps) => {
     setShowDropdown(false);
   };
 
-  const handleAssignmentUpdate = (field: 'assignedTo' | 'software', value: string) => {
+  const handleAssignmentUpdate = (field: 'assignedTo' | 'software' | 'talentTier', value: string) => {
     setNodes((nodes) =>
       nodes.map((node) => {
         if (node.id === id) {
@@ -188,6 +190,24 @@ export const ActionNode = memo(({ data, id }: NodeProps) => {
                   </div>
                   <div>
                     <label className="flex items-center gap-1 text-xs text-gray-600 mb-1">
+                      <Award className="w-3 h-3" />
+                      Talent Tier
+                    </label>
+                    <select
+                      value={data.talentTier || ''}
+                      onChange={(e) => handleAssignmentUpdate('talentTier', e.target.value)}
+                      className="w-full px-2 py-1 text-xs border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="">Not Set</option>
+                      {TALENT_TIERS.map((tier) => (
+                        <option key={tier} value={tier}>
+                          Tier {tier}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="flex items-center gap-1 text-xs text-gray-600 mb-1">
                       <Laptop className="w-3 h-3" />
                       Software
                     </label>
@@ -210,12 +230,18 @@ export const ActionNode = memo(({ data, id }: NodeProps) => {
                 </>
               ) : (
                 <>
-                  {(data.assignedTo || data.software) && (
+                  {(data.assignedTo || data.software || data.talentTier) && (
                     <div className="space-y-1">
                       {data.assignedTo && (
                         <div className="flex items-center gap-1 text-xs text-gray-700">
                           <User className="w-3 h-3 text-blue-500" />
                           <span className="truncate">{data.assignedTo}</span>
+                        </div>
+                      )}
+                      {data.talentTier && (
+                        <div className="flex items-center gap-1 text-xs text-gray-700">
+                          <Award className="w-3 h-3 text-amber-500" />
+                          <span className="truncate">Tier {data.talentTier}</span>
                         </div>
                       )}
                       {data.software && (
