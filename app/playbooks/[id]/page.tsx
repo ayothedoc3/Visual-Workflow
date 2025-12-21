@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Calendar, Target, Settings } from 'lucide-react';
+import { ArrowLeft, Calendar, Target, Settings, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WorkflowEditor } from '@/components/workflow-editor/WorkflowEditor';
 import { Node, Edge } from 'reactflow';
+import { generateNineGates } from '@/lib/emosSystem';
 
 interface Playbook {
   id: string;
@@ -27,6 +28,7 @@ export default function PlaybookDetailPage() {
 
   const [playbook, setPlaybook] = useState<Playbook | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasLoadedGates, setHasLoadedGates] = useState(false);
 
   // Lift canvas state to parent (n8n pattern)
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -57,8 +59,24 @@ export default function PlaybookDetailPage() {
           ...edge
         }));
 
-        setNodes(flowNodes);
-        setEdges(flowEdges);
+        // Auto-load 9 Gates if playbook is empty
+        if (flowNodes.length === 0 && !hasLoadedGates) {
+          const { nodes: gateNodes, edges: gateEdges } = generateNineGates();
+
+          const initialGateNodes: Node[] = gateNodes.map((node: any) => ({
+            id: node.id,
+            type: node.type,
+            position: node.position,
+            data: { ...node.data }
+          }));
+
+          setNodes(initialGateNodes);
+          setEdges(gateEdges);
+          setHasLoadedGates(true);
+        } else {
+          setNodes(flowNodes);
+          setEdges(flowEdges);
+        }
       }
     } catch (error) {
       console.error('Error fetching playbook:', error);
@@ -114,6 +132,22 @@ export default function PlaybookDetailPage() {
       console.error('Error saving playbook:', error);
       alert('Failed to save playbook');
     }
+  };
+
+  const handleLoadNineGates = () => {
+    const { nodes: gateNodes, edges: gateEdges } = generateNineGates();
+
+    const newGateNodes: Node[] = gateNodes.map((node: any) => ({
+      id: node.id,
+      type: node.type,
+      position: node.position,
+      data: { ...node.data }
+    }));
+
+    // Add gates to existing nodes
+    setNodes((prevNodes) => [...prevNodes, ...newGateNodes]);
+    setEdges((prevEdges) => [...prevEdges, ...gateEdges]);
+    setHasLoadedGates(true);
   };
 
   const handleActionNodeDoubleClick = async (nodeId: string, nodeData: any) => {
@@ -253,6 +287,17 @@ export default function PlaybookDetailPage() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                {!hasLoadedGates && nodes.length === 0 && (
+                  <Button
+                    onClick={handleLoadNineGates}
+                    size="sm"
+                    className="bg-indigo-600 hover:bg-indigo-700"
+                    title="Load 9 EMOS Gates"
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    Load 9 Gates
+                  </Button>
+                )}
                 <span className="px-4 py-2 rounded-full text-sm font-medium bg-purple-100 text-purple-800 border border-purple-300">
                   {playbook.overall_status}
                 </span>
@@ -277,7 +322,7 @@ export default function PlaybookDetailPage() {
         {/* Info Banner */}
         <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
           <p className="text-sm text-purple-800">
-            <strong>Layer 2: Playbook View</strong> - Create a detailed workflow with Issue → Action → Resource → Deliverable nodes. Double-click an Action node to drill down into task execution details.
+            <strong>Layer 2: Playbook View</strong> - Create a detailed workflow with Issue → Action → Resource → Deliverable nodes. New playbooks auto-load 9 EMOS Gates (Strategy Entry → Learning Loop) to guide execution. Double-click an Action node to drill down into task execution details.
           </p>
         </div>
 

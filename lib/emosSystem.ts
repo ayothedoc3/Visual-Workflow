@@ -335,3 +335,64 @@ export function getKPIsForLevel(level: Level): KPIDefinition[] {
 export function getGateByNumber(gateNumber: number): GateDefinition | undefined {
   return GATE_DEFINITIONS.find(gate => gate.number === gateNumber);
 }
+
+/**
+ * Generates 9 pre-connected Gate nodes for Layer 2 (Playbook)
+ * Returns nodes and edges ready to be added to the canvas
+ */
+export function generateNineGates() {
+  const nodes: any[] = [];
+  const edges: any[] = [];
+
+  const startX = 200;
+  const startY = 100;
+  const horizontalSpacing = 350;
+  const verticalSpacing = 200;
+
+  GATE_DEFINITIONS.forEach((gate, index) => {
+    const nodeId = `gate-${gate.number}-${Date.now()}`;
+
+    // Arrange gates in a 3x3 grid
+    const row = Math.floor(index / 3);
+    const col = index % 3;
+
+    nodes.push({
+      id: nodeId,
+      type: 'gate',
+      position: {
+        x: startX + (col * horizontalSpacing),
+        y: startY + (row * verticalSpacing)
+      },
+      data: {
+        id: nodeId,
+        type: 'gate',
+        gateNumber: gate.number,
+        gateName: gate.name,
+        question: gate.question,
+        action: gate.action,
+        blockedIf: gate.blockedIf,
+        escalateTo: gate.escalateTo,
+        description: gate.description,
+        isBlocked: false,
+        label: `Gate ${gate.number}: ${gate.name}`,
+        category: 'emos-gate',
+        status: 'not-started',
+        progress: 0
+      }
+    });
+
+    // Connect sequential gates (1→2→3→4→5→6→7→8→9)
+    if (index > 0) {
+      const previousNodeId = `gate-${GATE_DEFINITIONS[index - 1].number}-${Date.now()}`;
+      edges.push({
+        id: `edge-gate-${index}-${index + 1}`,
+        source: nodes[index - 1].id,
+        target: nodeId,
+        type: 'smoothstep',
+        animated: true
+      });
+    }
+  });
+
+  return { nodes, edges };
+}
