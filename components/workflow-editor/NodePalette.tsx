@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, Play, FileText, CheckCircle, StickyNote, Shield, Type, Image, Link, Folder } from 'lucide-react';
+import { AlertCircle, Play, FileText, CheckCircle, StickyNote, Shield, Type, Image, Link, Folder, MessageSquare, ArrowRight, Pencil } from 'lucide-react';
 
 interface NodePaletteProps {
   viewMode?: 'workflow' | 'board';
@@ -77,14 +77,35 @@ export function NodePalette({ viewMode = 'workflow' }: NodePaletteProps) {
       icon: Folder,
       color: 'bg-slate-100 border-slate-300 hover:bg-slate-200 text-slate-700',
       description: 'Group container'
+    },
+    {
+      type: 'annotation' as const,
+      label: 'Annotation',
+      icon: MessageSquare,
+      color: 'bg-gray-100 border-gray-300 hover:bg-gray-200 text-gray-700',
+      description: 'Floating text label'
+    },
+    {
+      type: 'arrow' as const,
+      label: 'Arrow',
+      icon: ArrowRight,
+      color: 'bg-indigo-100 border-indigo-300 hover:bg-indigo-200 text-indigo-700',
+      description: 'Visual direction arrow'
+    },
+    {
+      type: 'drawing' as const,
+      label: 'Drawing',
+      icon: Pencil,
+      color: 'bg-pink-100 border-pink-300 hover:bg-pink-200 text-pink-700',
+      description: 'Freehand sketch'
     }
   ];
 
   // Reorder nodes based on view mode
   const displayedNodes = viewMode === 'board'
     ? [
-        ...nodeTypes.filter(n => ['text-card', 'image-card', 'link-card', 'section', 'sticky'].includes(n.type)),
-        ...nodeTypes.filter(n => !['text-card', 'image-card', 'link-card', 'section', 'sticky'].includes(n.type))
+        ...nodeTypes.filter(n => ['text-card', 'image-card', 'link-card', 'section', 'annotation', 'arrow', 'drawing', 'sticky'].includes(n.type)),
+        ...nodeTypes.filter(n => !['text-card', 'image-card', 'link-card', 'section', 'annotation', 'arrow', 'drawing', 'sticky'].includes(n.type))
       ]
     : nodeTypes;
 

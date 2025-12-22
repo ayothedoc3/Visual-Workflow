@@ -31,6 +31,9 @@ import { TextCardNode } from './NodeTypes/TextCardNode';
 import { ImageCardNode } from './NodeTypes/ImageCardNode';
 import { LinkCardNode } from './NodeTypes/LinkCardNode';
 import { SectionNode } from './NodeTypes/SectionNode';
+import { AnnotationNode } from './NodeTypes/AnnotationNode';
+import { ArrowNode } from './NodeTypes/ArrowNode';
+import { DrawingNode } from './NodeTypes/DrawingNode';
 
 const nodeTypes = {
   issue: IssueNode,
@@ -43,6 +46,9 @@ const nodeTypes = {
   'image-card': ImageCardNode,
   'link-card': LinkCardNode,
   section: SectionNode,
+  annotation: AnnotationNode,
+  arrow: ArrowNode,
+  drawing: DrawingNode,
 };
 
 const defaultEdgeOptions = {
@@ -251,6 +257,12 @@ export function WorkflowCanvas({
                 return '#8B5CF6';
               case 'section':
                 return '#64748B';
+              case 'annotation':
+                return '#6B7280';
+              case 'arrow':
+                return '#6366F1';
+              case 'drawing':
+                return '#EC4899';
               default:
                 return '#94A3B8';
             }
