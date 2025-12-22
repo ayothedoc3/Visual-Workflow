@@ -27,6 +27,9 @@ import { ResourceNode } from './NodeTypes/ResourceNode';
 import { DeliverableNode } from './NodeTypes/DeliverableNode';
 import { StickyNote } from './NodeTypes/StickyNote';
 import { GateNode } from './NodeTypes/GateNode';
+import { TextCardNode } from './NodeTypes/TextCardNode';
+import { ImageCardNode } from './NodeTypes/ImageCardNode';
+import { LinkCardNode } from './NodeTypes/LinkCardNode';
 
 const nodeTypes = {
   issue: IssueNode,
@@ -35,6 +38,9 @@ const nodeTypes = {
   deliverable: DeliverableNode,
   sticky: StickyNote,
   gate: GateNode,
+  'text-card': TextCardNode,
+  'image-card': ImageCardNode,
+  'link-card': LinkCardNode,
 };
 
 const defaultEdgeOptions = {
@@ -235,6 +241,12 @@ export function WorkflowCanvas({
                 return '#8B5CF6';
               case 'gate':
                 return '#6366F1';
+              case 'text-card':
+                return '#F97316';
+              case 'image-card':
+                return '#06B6D4';
+              case 'link-card':
+                return '#8B5CF6';
               default:
                 return '#94A3B8';
             }

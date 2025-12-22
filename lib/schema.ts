@@ -5,7 +5,7 @@ import { pgTable, uuid, varchar, text, timestamp, jsonb, pgEnum, integer, date }
 // ============================================
 
 // Enum for node types
-export const nodeTypeEnum = pgEnum('node_type', ['issue', 'action', 'resource', 'deliverable', 'gate']);
+export const nodeTypeEnum = pgEnum('node_type', ['issue', 'action', 'resource', 'deliverable', 'gate', 'text-card', 'image-card', 'link-card']);
 
 // Enum for campaign/playbook status
 export const statusEnum = pgEnum('status', ['not-started', 'on-track', 'in-progress', 'at-risk', 'blocked', 'completed']);
@@ -240,7 +240,7 @@ export const resources = pgTable('wf_resources', {
 // ============================================
 
 // Node type enum
-export type NodeType = 'issue' | 'action' | 'resource' | 'deliverable' | 'gate';
+export type NodeType = 'issue' | 'action' | 'resource' | 'deliverable' | 'gate' | 'text-card' | 'image-card' | 'link-card';
 
 // Status types
 export type CampaignStatus = 'not-started' | 'on-track' | 'at-risk' | 'blocked' | 'completed';
