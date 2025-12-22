@@ -237,140 +237,117 @@ export default function PlaybookDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-8">
-      <div className="max-w-[1800px] mx-auto">
-        {/* Breadcrumb Navigation */}
-        <div className="mb-4 flex items-center gap-2 text-sm text-gray-600">
-          <button
-            onClick={() => router.push('/campaigns')}
-            className="hover:text-blue-600 hover:underline"
-          >
-            Campaigns
-          </button>
-          <span>/</span>
-          <button
-            onClick={() => router.push(`/campaigns/${playbook.campaign_id}`)}
-            className="hover:text-blue-600 hover:underline"
-          >
-            {playbook.campaign_name}
-          </button>
-          <span>/</span>
-          <span className="text-gray-900 font-medium">{playbook.name}</span>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+      {/* Compact Sticky Header */}
+      <div className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+        <div className="px-4 py-2">
+          <div className="flex items-center justify-between gap-4">
+            {/* Left: Navigation + Title */}
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => router.push(`/campaigns/${playbook.campaign_id}`)}
+                className="flex-shrink-0"
+              >
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
 
-        {/* Header */}
-        <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => router.push(`/campaigns/${playbook.campaign_id}`)}
-            className="mb-4 hover:bg-white"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Campaign
-          </Button>
-
-          <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                  <Target className="w-4 h-4" />
-                  <span>Campaign: {playbook.campaign_name}</span>
-                </div>
-                <h1 className="text-3xl font-semibold mb-2">{playbook.name}</h1>
-                {playbook.description && (
-                  <p className="text-gray-600 mb-4">{playbook.description}</p>
-                )}
-                <div className="flex items-center gap-6 text-sm text-gray-500">
-                  <div className="flex items-center">
-                    <Calendar className="w-4 h-4 mr-2" />
-                    <span>{playbook.execution_count} execution{playbook.execution_count !== 1 ? 's' : ''}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <span>Progress: {playbook.progress}%</span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2 text-xs text-gray-500 flex-shrink-0">
+                <button onClick={() => router.push('/campaigns')} className="hover:text-blue-600">
+                  Campaigns
+                </button>
+                <span>/</span>
+                <button onClick={() => router.push(`/campaigns/${playbook.campaign_id}`)} className="hover:text-blue-600 max-w-[100px] truncate">
+                  {playbook.campaign_name}
+                </button>
+                <span>/</span>
               </div>
-              <div className="flex items-center gap-2">
-                {!hasLoadedGates && nodes.length === 0 && (
-                  <Button
-                    onClick={handleLoadNineGates}
-                    size="sm"
-                    className="bg-indigo-600 hover:bg-indigo-700"
-                    title="Load 9 EMOS Gates"
-                  >
-                    <Shield className="w-4 h-4 mr-2" />
-                    Load 9 Gates
-                  </Button>
-                )}
-                <span className="px-4 py-2 rounded-full text-sm font-medium bg-purple-100 text-purple-800 border border-purple-300">
-                  {playbook.overall_status}
-                </span>
 
-                {/* View Mode Toggle */}
-                <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                  <button
-                    onClick={() => setViewMode('workflow')}
-                    className={`flex items-center gap-1 px-3 py-1 rounded text-xs font-medium transition-colors ${
-                      viewMode === 'workflow'
-                        ? 'bg-white text-blue-700 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                    title="Workflow Mode"
-                  >
-                    <Workflow className="w-3 h-3" />
-                    Workflow
-                  </button>
-                  <button
-                    onClick={() => setViewMode('board')}
-                    className={`flex items-center gap-1 px-3 py-1 rounded text-xs font-medium transition-colors ${
-                      viewMode === 'board'
-                        ? 'bg-white text-purple-700 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                    title="Board Mode"
-                  >
-                    <LayoutGrid className="w-3 h-3" />
-                    Board
-                  </button>
-                </div>
+              <h1 className="text-lg font-semibold truncate">{playbook.name}</h1>
 
-                <Button variant="ghost" size="sm" onClick={() => setShowHelp(true)} title="Help Guide">
-                  <HelpCircle className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="sm">
-                  <Settings className="w-4 h-4" />
-                </Button>
-              </div>
+              {playbook.description && (
+                <p className="text-xs text-gray-500 truncate max-w-[200px]">{playbook.description}</p>
+              )}
             </div>
 
-            {/* Progress Bar */}
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+            {/* Right: Controls */}
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className="text-xs text-gray-500">{playbook.progress}%</span>
+
+              <div className="w-20 bg-gray-200 rounded-full h-1.5">
                 <div
-                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300"
+                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transition-all"
                   style={{ width: `${playbook.progress}%` }}
                 />
               </div>
+
+              {!hasLoadedGates && nodes.length === 0 && (
+                <Button
+                  onClick={handleLoadNineGates}
+                  size="sm"
+                  className="bg-indigo-600 hover:bg-indigo-700 h-7 text-xs"
+                >
+                  <Shield className="w-3 h-3 mr-1" />
+                  Load Gates
+                </Button>
+              )}
+
+              {/* View Mode Toggle */}
+              <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+                <button
+                  onClick={() => setViewMode('workflow')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
+                    viewMode === 'workflow'
+                      ? 'bg-white text-blue-700 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Workflow className="w-3 h-3" />
+                  Workflow
+                </button>
+                <button
+                  onClick={() => setViewMode('board')}
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
+                    viewMode === 'board'
+                      ? 'bg-white text-purple-700 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <LayoutGrid className="w-3 h-3" />
+                  Board
+                </button>
+              </div>
+
+              <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                {playbook.overall_status}
+              </span>
+
+              <Button variant="ghost" size="sm" onClick={() => setShowHelp(true)} className="h-7 w-7 p-0">
+                <HelpCircle className="w-4 h-4" />
+              </Button>
             </div>
           </div>
+
+          {/* Inline Info Banner */}
+          {viewMode === 'workflow' ? (
+            <div className="mt-2 bg-purple-50 border border-purple-200 rounded px-3 py-1.5">
+              <p className="text-xs text-purple-800">
+                <strong>Workflow Mode:</strong> Structured workflow with 9 EMOS Gates (Strategy Entry → Learning Loop)
+              </p>
+            </div>
+          ) : (
+            <div className="mt-2 bg-gradient-to-r from-orange-50 to-pink-50 border border-orange-200 rounded px-3 py-1.5">
+              <p className="text-xs text-orange-800">
+                <strong>Board Mode:</strong> Freeform canvas for brainstorming, moodboards, and collecting ideas
+              </p>
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* Info Banner */}
-        {viewMode === 'workflow' ? (
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-            <p className="text-sm text-purple-800">
-              <strong>Workflow Mode</strong> - Create a structured workflow with 9 EMOS Gates and detailed nodes (Issue/Action/Resource/Deliverable). Gates guide execution from Strategy Entry to Learning Loop.
-            </p>
-          </div>
-        ) : (
-          <div className="bg-gradient-to-r from-orange-50 to-pink-50 border border-orange-200 rounded-lg p-4 mb-4">
-            <p className="text-sm text-orange-800">
-              <strong>Board Mode</strong> - Freeform inspiration board! Add Text Cards for notes, Image Cards for visuals, and Link Cards for references. Perfect for brainstorming, moodboards, and collecting ideas.
-            </p>
-          </div>
-        )}
-
-        {/* Workflow Editor */}
+      {/* Canvas - Full Height */}
+      <div style={{ height: 'calc(100vh - 100px)' }}>
         <WorkflowEditor
           workflowId={playbookId}
           nodes={nodes}
@@ -381,17 +358,17 @@ export default function PlaybookDetailPage() {
           onNodeDoubleClick={handleActionNodeDoubleClick}
           viewMode={viewMode}
         />
-
-        {/* Help Modal */}
-        <HelpModal
-          isOpen={showHelp}
-          onClose={() => setShowHelp(false)}
-          title={PLAYBOOK_HELP.title}
-          description={PLAYBOOK_HELP.description}
-          sections={PLAYBOOK_HELP.sections}
-          examples={PLAYBOOK_HELP.examples}
-        />
       </div>
+
+      {/* Help Modal */}
+      <HelpModal
+        isOpen={showHelp}
+        onClose={() => setShowHelp(false)}
+        title={PLAYBOOK_HELP.title}
+        description={PLAYBOOK_HELP.description}
+        sections={PLAYBOOK_HELP.sections}
+        examples={PLAYBOOK_HELP.examples}
+      />
     </div>
   );
 }
