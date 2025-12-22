@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, FolderKanban, Calendar, Settings, Award, TrendingUp, Target } from 'lucide-react';
+import { ArrowLeft, FolderKanban, Calendar, Settings, Award, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StrategicCanvas } from '@/components/strategic-canvas/StrategicCanvas';
-import { PACKAGE_TIERS, LEVELS, PILLARS } from '@/lib/emosSystem';
-import type { PackageTier, Level, Pillar } from '@/lib/schema';
+import { PACKAGE_TIERS, LEVELS } from '@/lib/emosSystem';
+import type { PackageTier, Level } from '@/lib/schema';
 
 interface Campaign {
   id: string;
@@ -20,7 +20,6 @@ interface Campaign {
   playbook_count: number;
   package_tier?: PackageTier | null;
   level?: Level | null;
-  pillar?: Pillar | null;
 }
 
 export default function CampaignDetailPage() {
@@ -74,15 +73,14 @@ export default function CampaignDetailPage() {
     }
   };
 
-  const handleUpdateEMOS = async (packageTier: PackageTier | null, level: Level | null, pillar: Pillar | null) => {
+  const handleUpdateEMOS = async (packageTier: PackageTier | null, level: Level | null) => {
     try {
       const response = await fetch(`/api/campaigns/${campaignId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           packageTier,
-          level,
-          pillar
+          level
         })
       });
 
@@ -203,12 +201,6 @@ export default function CampaignDetailPage() {
                       <span className="text-sm font-medium text-blue-800">{campaign.level}</span>
                     </div>
                   )}
-                  {campaign.pillar && (
-                    <div className="flex items-center gap-2 px-3 py-1 bg-purple-50 border border-purple-200 rounded-lg">
-                      <Target className="w-4 h-4 text-purple-600" />
-                      <span className="text-sm font-medium text-purple-800">{campaign.pillar}</span>
-                    </div>
-                  )}
                 </div>
 
                 <div className="flex items-center gap-6 text-sm text-gray-500">
@@ -306,32 +298,11 @@ export default function CampaignDetailPage() {
                     Growth stage: ACQUIRE new clients, MAINTAIN existing, or SCALE operations
                   </p>
                 </div>
-
-                {/* Pillar */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <Target className="w-4 h-4 text-purple-600" />
-                    Pillar
-                  </label>
-                  <select
-                    value={campaign.pillar || ''}
-                    onChange={(e) => setCampaign({ ...campaign, pillar: e.target.value as Pillar || null })}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  >
-                    <option value="">Not Set</option>
-                    {PILLARS.map((pillar) => (
-                      <option key={pillar} value={pillar}>{pillar}</option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Strategic focus area: Revenue, Technology, People, or Equity
-                  </p>
-                </div>
               </div>
 
               <div className="flex items-center gap-3 mt-6 pt-6 border-t border-gray-200">
                 <Button
-                  onClick={() => handleUpdateEMOS(campaign.package_tier || null, campaign.level || null, campaign.pillar || null)}
+                  onClick={() => handleUpdateEMOS(campaign.package_tier || null, campaign.level || null)}
                   className="flex-1 bg-blue-600 hover:bg-blue-700"
                 >
                   Save EMOS Settings
