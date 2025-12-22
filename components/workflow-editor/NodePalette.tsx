@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, Play, FileText, CheckCircle, StickyNote, Shield, Type, Image, Link } from 'lucide-react';
+import { AlertCircle, Play, FileText, CheckCircle, StickyNote, Shield, Type, Image, Link, Folder } from 'lucide-react';
 
 interface NodePaletteProps {
   viewMode?: 'workflow' | 'board';
@@ -70,14 +70,21 @@ export function NodePalette({ viewMode = 'workflow' }: NodePaletteProps) {
       icon: Link,
       color: 'bg-violet-100 border-violet-300 hover:bg-violet-200 text-violet-700',
       description: 'URL link with notes'
+    },
+    {
+      type: 'section' as const,
+      label: 'Section',
+      icon: Folder,
+      color: 'bg-slate-100 border-slate-300 hover:bg-slate-200 text-slate-700',
+      description: 'Group container'
     }
   ];
 
   // Reorder nodes based on view mode
   const displayedNodes = viewMode === 'board'
     ? [
-        ...nodeTypes.filter(n => ['text-card', 'image-card', 'link-card', 'sticky'].includes(n.type)),
-        ...nodeTypes.filter(n => !['text-card', 'image-card', 'link-card', 'sticky'].includes(n.type))
+        ...nodeTypes.filter(n => ['text-card', 'image-card', 'link-card', 'section', 'sticky'].includes(n.type)),
+        ...nodeTypes.filter(n => !['text-card', 'image-card', 'link-card', 'section', 'sticky'].includes(n.type))
       ]
     : nodeTypes;
 

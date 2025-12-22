@@ -30,6 +30,7 @@ import { GateNode } from './NodeTypes/GateNode';
 import { TextCardNode } from './NodeTypes/TextCardNode';
 import { ImageCardNode } from './NodeTypes/ImageCardNode';
 import { LinkCardNode } from './NodeTypes/LinkCardNode';
+import { SectionNode } from './NodeTypes/SectionNode';
 
 const nodeTypes = {
   issue: IssueNode,
@@ -41,6 +42,7 @@ const nodeTypes = {
   'text-card': TextCardNode,
   'image-card': ImageCardNode,
   'link-card': LinkCardNode,
+  section: SectionNode,
 };
 
 const defaultEdgeOptions = {
@@ -247,6 +249,8 @@ export function WorkflowCanvas({
                 return '#06B6D4';
               case 'link-card':
                 return '#8B5CF6';
+              case 'section':
+                return '#64748B';
               default:
                 return '#94A3B8';
             }
