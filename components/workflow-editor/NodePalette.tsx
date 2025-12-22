@@ -2,7 +2,11 @@
 
 import { AlertCircle, Play, FileText, CheckCircle, StickyNote, Shield, Type, Image, Link } from 'lucide-react';
 
-export function NodePalette() {
+interface NodePaletteProps {
+  viewMode?: 'workflow' | 'board';
+}
+
+export function NodePalette({ viewMode = 'workflow' }: NodePaletteProps) {
   const nodeTypes = [
     {
       type: 'issue' as const,
@@ -69,6 +73,14 @@ export function NodePalette() {
     }
   ];
 
+  // Reorder nodes based on view mode
+  const displayedNodes = viewMode === 'board'
+    ? [
+        ...nodeTypes.filter(n => ['text-card', 'image-card', 'link-card', 'sticky'].includes(n.type)),
+        ...nodeTypes.filter(n => !['text-card', 'image-card', 'link-card', 'sticky'].includes(n.type))
+      ]
+    : nodeTypes;
+
   const onDragStart = (event: React.DragEvent, nodeType: string) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
@@ -76,9 +88,11 @@ export function NodePalette() {
 
   return (
     <div className="absolute top-4 left-4 z-10 bg-white rounded-xl shadow-xl border-2 border-gray-300 p-3 w-48">
-      <h3 className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wide">Add Node</h3>
+      <h3 className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wide">
+        {viewMode === 'board' ? 'Add Card' : 'Add Node'}
+      </h3>
       <div className="grid grid-cols-2 gap-2">
-        {nodeTypes.map((nodeType) => {
+        {displayedNodes.map((nodeType) => {
           const Icon = nodeType.icon;
           return (
             <div

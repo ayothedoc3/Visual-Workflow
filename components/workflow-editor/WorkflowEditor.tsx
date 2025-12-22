@@ -15,6 +15,7 @@ interface WorkflowEditorProps {
   onEdgesChange: (edges: Edge[]) => void;
   onSave: () => void;
   onNodeDoubleClick?: (nodeId: string, nodeData: any) => void;
+  viewMode?: 'workflow' | 'board';
 }
 
 export function WorkflowEditor({
@@ -24,7 +25,8 @@ export function WorkflowEditor({
   onNodesChange,
   onEdgesChange,
   onSave,
-  onNodeDoubleClick
+  onNodeDoubleClick,
+  viewMode = 'workflow'
 }: WorkflowEditorProps) {
   // Add _onDoubleClick to node data
   const enrichedNodes = useMemo(() =>
@@ -84,7 +86,7 @@ export function WorkflowEditor({
       />
 
       {/* Node Palette */}
-      <NodePalette />
+      <NodePalette viewMode={viewMode} />
 
       {/* Floating Save Button - always show when there are nodes */}
       {hasChanges && (

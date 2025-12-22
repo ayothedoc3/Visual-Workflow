@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Calendar, Target, Settings, Shield, HelpCircle } from 'lucide-react';
+import { ArrowLeft, Calendar, Target, Settings, Shield, HelpCircle, Workflow, LayoutGrid } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WorkflowEditor } from '@/components/workflow-editor/WorkflowEditor';
 import { HelpModal } from '@/components/help/HelpModal';
@@ -32,6 +32,7 @@ export default function PlaybookDetailPage() {
   const [loading, setLoading] = useState(true);
   const [hasLoadedGates, setHasLoadedGates] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [viewMode, setViewMode] = useState<'workflow' | 'board'>('workflow');
 
   // Lift canvas state to parent (n8n pattern)
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -304,6 +305,35 @@ export default function PlaybookDetailPage() {
                 <span className="px-4 py-2 rounded-full text-sm font-medium bg-purple-100 text-purple-800 border border-purple-300">
                   {playbook.overall_status}
                 </span>
+
+                {/* View Mode Toggle */}
+                <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                  <button
+                    onClick={() => setViewMode('workflow')}
+                    className={`flex items-center gap-1 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                      viewMode === 'workflow'
+                        ? 'bg-white text-blue-700 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                    title="Workflow Mode"
+                  >
+                    <Workflow className="w-3 h-3" />
+                    Workflow
+                  </button>
+                  <button
+                    onClick={() => setViewMode('board')}
+                    className={`flex items-center gap-1 px-3 py-1 rounded text-xs font-medium transition-colors ${
+                      viewMode === 'board'
+                        ? 'bg-white text-purple-700 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                    title="Board Mode"
+                  >
+                    <LayoutGrid className="w-3 h-3" />
+                    Board
+                  </button>
+                </div>
+
                 <Button variant="ghost" size="sm" onClick={() => setShowHelp(true)} title="Help Guide">
                   <HelpCircle className="w-4 h-4" />
                 </Button>
@@ -326,11 +356,19 @@ export default function PlaybookDetailPage() {
         </div>
 
         {/* Info Banner */}
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
-          <p className="text-sm text-purple-800">
-            <strong>Layer 2: Playbook View</strong> - Create a detailed workflow with Issue → Action → Resource → Deliverable nodes. New playbooks auto-load 9 EMOS Gates (Strategy Entry → Learning Loop) to guide execution. Double-click an Action node to drill down into task execution details.
-          </p>
-        </div>
+        {viewMode === 'workflow' ? (
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+            <p className="text-sm text-purple-800">
+              <strong>Workflow Mode</strong> - Create a structured workflow with 9 EMOS Gates and detailed nodes (Issue/Action/Resource/Deliverable). Gates guide execution from Strategy Entry to Learning Loop.
+            </p>
+          </div>
+        ) : (
+          <div className="bg-gradient-to-r from-orange-50 to-pink-50 border border-orange-200 rounded-lg p-4 mb-4">
+            <p className="text-sm text-orange-800">
+              <strong>Board Mode</strong> - Freeform inspiration board! Add Text Cards for notes, Image Cards for visuals, and Link Cards for references. Perfect for brainstorming, moodboards, and collecting ideas.
+            </p>
+          </div>
+        )}
 
         {/* Workflow Editor */}
         <WorkflowEditor
@@ -341,6 +379,7 @@ export default function PlaybookDetailPage() {
           onEdgesChange={setEdges}
           onSave={handleSave}
           onNodeDoubleClick={handleActionNodeDoubleClick}
+          viewMode={viewMode}
         />
 
         {/* Help Modal */}
