@@ -61,7 +61,7 @@ export const GateNode = memo(({ data, id }: NodeProps) => {
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-purple-700">GATE {gateNumber}</span>
               {isBlocked && (
-                <AlertCircle className="w-4 h-4 text-red-500" title="Gate is blocked" />
+                <AlertCircle className="w-4 h-4 text-red-500" />
               )}
             </div>
             <h3 className="font-bold text-sm text-gray-800">{gateName}</h3>
