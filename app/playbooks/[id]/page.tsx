@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Calendar, Target, Settings, Shield } from 'lucide-react';
+import { ArrowLeft, Calendar, Target, Settings, Shield, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WorkflowEditor } from '@/components/workflow-editor/WorkflowEditor';
+import { HelpModal } from '@/components/help/HelpModal';
 import { Node, Edge } from 'reactflow';
 import { generateNineGates } from '@/lib/emosSystem';
+import { PLAYBOOK_HELP } from '@/lib/helpContent';
 
 interface Playbook {
   id: string;
@@ -29,6 +31,7 @@ export default function PlaybookDetailPage() {
   const [playbook, setPlaybook] = useState<Playbook | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasLoadedGates, setHasLoadedGates] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   // Lift canvas state to parent (n8n pattern)
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -301,6 +304,9 @@ export default function PlaybookDetailPage() {
                 <span className="px-4 py-2 rounded-full text-sm font-medium bg-purple-100 text-purple-800 border border-purple-300">
                   {playbook.overall_status}
                 </span>
+                <Button variant="ghost" size="sm" onClick={() => setShowHelp(true)} title="Help Guide">
+                  <HelpCircle className="w-4 h-4" />
+                </Button>
                 <Button variant="ghost" size="sm">
                   <Settings className="w-4 h-4" />
                 </Button>
@@ -335,6 +341,16 @@ export default function PlaybookDetailPage() {
           onEdgesChange={setEdges}
           onSave={handleSave}
           onNodeDoubleClick={handleActionNodeDoubleClick}
+        />
+
+        {/* Help Modal */}
+        <HelpModal
+          isOpen={showHelp}
+          onClose={() => setShowHelp(false)}
+          title={PLAYBOOK_HELP.title}
+          description={PLAYBOOK_HELP.description}
+          sections={PLAYBOOK_HELP.sections}
+          examples={PLAYBOOK_HELP.examples}
         />
       </div>
     </div>

@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, Sparkles } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Sparkles, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { TemplateForm } from '@/components/template-manager/TemplateForm';
 import { AITemplateDialog } from '@/components/template-manager/AITemplateDialog';
+import { HelpModal } from '@/components/help/HelpModal';
 import type { Template } from '@/lib/storage';
 import { templatesApi } from '@/lib/api-client';
+import { TEMPLATES_HELP } from '@/lib/helpContent';
 
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -15,6 +17,7 @@ export default function TemplatesPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [showAIDialog, setShowAIDialog] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<Template | undefined>();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedNodeType, setSelectedNodeType] = useState<string>('all');
@@ -140,6 +143,14 @@ export default function TemplatesPage() {
             </p>
           </div>
           <div className="flex gap-3">
+            <Button
+              size="lg"
+              variant="ghost"
+              onClick={() => setShowHelp(true)}
+              title="Help Guide"
+            >
+              <HelpCircle className="w-5 h-5" />
+            </Button>
             <Button
               size="lg"
               variant="outline"
@@ -275,6 +286,16 @@ export default function TemplatesPage() {
             onGenerate={handleAIGenerate}
           />
         )}
+
+        {/* Help Modal */}
+        <HelpModal
+          isOpen={showHelp}
+          onClose={() => setShowHelp(false)}
+          title={TEMPLATES_HELP.title}
+          description={TEMPLATES_HELP.description}
+          sections={TEMPLATES_HELP.sections}
+          examples={TEMPLATES_HELP.examples}
+        />
       </div>
     </div>
   );

@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, FolderKanban, Calendar, Settings, Award, TrendingUp } from 'lucide-react';
+import { ArrowLeft, FolderKanban, Calendar, Settings, Award, TrendingUp, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StrategicCanvas } from '@/components/strategic-canvas/StrategicCanvas';
+import { HelpModal } from '@/components/help/HelpModal';
 import { PACKAGE_TIERS, LEVELS } from '@/lib/emosSystem';
+import { CAMPAIGN_HELP } from '@/lib/helpContent';
 import type { PackageTier, Level } from '@/lib/schema';
 
 interface Campaign {
@@ -30,6 +32,7 @@ export default function CampaignDetailPage() {
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [loading, setLoading] = useState(true);
   const [showEMOSSettings, setShowEMOSSettings] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     if (campaignId) {
@@ -222,6 +225,9 @@ export default function CampaignDetailPage() {
                 <span className="px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800 border border-blue-300">
                   {campaign.overall_status}
                 </span>
+                <Button variant="ghost" size="sm" onClick={() => setShowHelp(true)} title="Help Guide">
+                  <HelpCircle className="w-4 h-4" />
+                </Button>
                 <Button variant="ghost" size="sm" onClick={() => setShowEMOSSettings(true)} title="EMOS Settings">
                   <Settings className="w-4 h-4" />
                 </Button>
@@ -321,6 +327,16 @@ export default function CampaignDetailPage() {
             </div>
           </div>
         )}
+
+        {/* Help Modal */}
+        <HelpModal
+          isOpen={showHelp}
+          onClose={() => setShowHelp(false)}
+          title={CAMPAIGN_HELP.title}
+          description={CAMPAIGN_HELP.description}
+          sections={CAMPAIGN_HELP.sections}
+          examples={CAMPAIGN_HELP.examples}
+        />
       </div>
     </div>
   );
